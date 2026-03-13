@@ -410,9 +410,13 @@ tbody tr:hover td { background: var(--cream); }
   border-bottom: 1px solid var(--cream2);
 }
 .modal-footer {
-  display: flex; gap: 10px; justify-content: flex-end;
+  display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
   margin-top: 24px; padding-top: 20px;
   border-top: 1px solid var(--cream2);
+  position: sticky; bottom: 0;
+  background: var(--white);
+  padding-bottom: 4px;
+  z-index: 10;
 }
 
 /* ── SUMMEN BOX ─────────────────────────────────── */
@@ -537,6 +541,78 @@ tbody tr:hover td { background: var(--cream); }
 .prod-btn-offen { background: #e8eef5; color: #2c5f8a; }
 .prod-btn-bezahlt { background: var(--green-soft); color: var(--forest); }
 .prod-card-date { font-size: 11px; color: var(--sand); }
+
+
+/* ── DARK MODE ─────────────────────────────────────── */
+body.dark {
+  --cream: #1a1f1e;
+  --cream2: #222b28;
+  --cream3: #2d3b37;
+  --forest: #4a9e7a;
+  --forest2: #3d8a69;
+  --forest3: #56b589;
+  --gold: #c9a84c;
+  --gold2: #e8c96e;
+  --sand: #7a9e90;
+  --sand2: #5a7e70;
+  --ink: #e8f0ec;
+  --ink2: #c8d8d0;
+  --ink3: #9ab8ac;
+  --white: #1e2825;
+  --green-soft: #1a3028;
+  --red-soft: #2d1a1a;
+  --yellow-soft: #2d2510;
+  --blue-soft: #1a2030;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+}
+body.dark #sidebar {
+  background: #111815;
+}
+body.dark .topbar {
+  background: rgba(26,31,30,0.95);
+  border-bottom-color: var(--cream3);
+}
+body.dark .modal {
+  background: #1e2825;
+}
+body.dark .modal-footer {
+  background: #1e2825;
+}
+body.dark .card {
+  background: #1e2825;
+  border-color: var(--cream3);
+}
+body.dark table thead tr {
+  background: #222b28;
+}
+body.dark .form-input,
+body.dark .form-select,
+body.dark .form-textarea {
+  background: #222b28;
+  border-color: var(--cream3);
+  color: var(--ink);
+}
+body.dark .summen-box {
+  background: #222b28;
+}
+body.dark .prod-col {
+  background: #222b28;
+}
+body.dark .prod-card {
+  background: #1e2825;
+}
+body.dark .hint-box {
+  background: #1a3028;
+  border-color: var(--forest);
+}
+body.dark .stat-card {
+  background: #1e2825;
+}
+body.dark .empty {
+  background: #1e2825;
+}
 
 @media print {
   @page { size: A4; margin: 18mm 22mm 22mm 22mm; }
@@ -869,6 +945,26 @@ tbody tr:hover td { background: var(--cream); }
         <strong>Tipp:</strong> Fülle deine Firmendaten vollständig aus. Sie erscheinen automatisch auf jeder Rechnung und sind rechtlich erforderlich.
       </div>
 
+
+      <!-- Dark Mode Card -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><div><div class="card-title">🌙 Erscheinungsbild</div><div class="card-sub">Dark Mode für alle Geräte</div></div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+          <div>
+            <p style="font-size:13px;color:var(--ink3);line-height:1.6">Dunkles Design – schont die Augen bei der Arbeit abends.</p>
+          </div>
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none">
+            <span style="font-size:14px;font-weight:500;color:var(--ink)">Dark Mode</span>
+            <div style="position:relative">
+              <input type="checkbox" id="cfg_darkmode" onchange="toggleDarkMode()" style="display:none">
+              <div id="darkmode-track" onclick="document.getElementById('cfg_darkmode').click()" style="width:52px;height:28px;background:var(--cream3);border-radius:14px;cursor:pointer;transition:background 0.3s;position:relative">
+                <div id="darkmode-thumb" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:white;border-radius:50%;transition:transform 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></div>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
       <!-- Logo Upload Card -->
       <div class="card" style="margin-bottom:20px">
         <div class="card-header"><div><div class="card-title">Firmenlogo</div><div class="card-sub">Erscheint auf allen Rechnungen</div></div></div>
@@ -993,6 +1089,7 @@ tbody tr:hover td { background: var(--cream); }
       <div class="summen-total"><span>Gesamtbetrag</span><span id="s-brutto">0,00 €</span></div>
     </div>
 
+    <div class="g2">
     <div class="form-row" style="margin-top:16px">
       <label class="form-label">Zahlungsart</label>
       <select class="form-select" id="re-zahlart">
@@ -1013,7 +1110,6 @@ tbody tr:hover td { background: var(--cream); }
         <option value="Instagram">Instagram</option>
         <option value="Sonstige">Sonstige</option>
       </select>
-    </div>
     </div>
     <div class="form-row">
       <label class="form-label">Status</label>
@@ -1401,7 +1497,6 @@ function renderReTable(q='') {
     <td><div style="display:flex;gap:6px">
       <button class="btn btn-ghost btn-sm" onclick="editRe('${r.id}')">✏️</button>
       <button class="btn btn-ghost btn-sm" onclick="druckRe('${r.id}')">🖨</button>
-        <button class="btn btn-ghost btn-sm" title="Lieferschein" onclick="druckLieferschein('${r.id}')">📦</button>
       <button class="btn-danger" onclick="delRe('${r.id}')">✕</button>
     </div></td>
   </tr>`).join('');
@@ -2002,6 +2097,29 @@ async function saveBewegung() {
 }
 
 
+
+// ══ DARK MODE ══════════════════════════════════════
+function toggleDarkMode() {
+  const cb = document.getElementById('cfg_darkmode');
+  const isDark = cb.checked;
+  document.body.classList.toggle('dark', isDark);
+  document.getElementById('darkmode-track').style.background = isDark ? 'var(--forest)' : 'var(--cream3)';
+  document.getElementById('darkmode-thumb').style.transform = isDark ? 'translateX(24px)' : 'translateX(0)';
+  DB.config.darkmode = isDark;
+  saveDB();
+}
+
+function applyDarkMode() {
+  const isDark = DB.config.darkmode || false;
+  document.body.classList.toggle('dark', isDark);
+  const cb = document.getElementById('cfg_darkmode');
+  if(cb) cb.checked = isDark;
+  const track = document.getElementById('darkmode-track');
+  const thumb = document.getElementById('darkmode-thumb');
+  if(track) track.style.background = isDark ? 'var(--forest)' : 'var(--cream3)';
+  if(thumb) thumb.style.transform = isDark ? 'translateX(24px)' : 'translateX(0)';
+}
+
 // ══ AUSGABEN ═══════════════════════════════════════
 const AUS_KATS=['Büromaterial','Software & Lizenzen','Marketing & Werbung','Fahrtkosten','Telefon & Internet','Miete & Nebenkosten','Versicherungen','Weiterbildung','Bewirtung','Waren & Material','Steuerberater','Sonstiges'];
 
@@ -2126,65 +2244,6 @@ function applyLogoPreview(){
 function removeLogo(){DB.config.logo='';saveDB().then(()=>applyLogoPreview());}
 
 
-// ══ LIEFERSCHEIN ══════════════════════════════════════
-function druckLieferschein(id) {
-  const r = DB.rechnungen.find(x=>x.id===id);
-  if(!r) return;
-  const cfg = DB.config;
-  const kunde = DB.kunden.find(k=>k.id===r.kundeId)||{};
-  const emp = [kunde.firma||kunde.name||r.kundeName, kunde.str, (kunde.plz+' '+kunde.ort).trim(), kunde.land&&kunde.land.toLowerCase()!=='deutschland'?kunde.land:''].filter(Boolean).join('<br>');
-  const rows = r.positionen.map(p=>`<tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #f0f0f0">${p.beschr}</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700">${p.menge}</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #f0f0f0;text-align:center">
-      <div style="width:20px;height:20px;border:1.5px solid #999;border-radius:3px;display:inline-block"></div>
-    </td>
-  </tr>`).join('');
-  const logoHtml = cfg.logo?`<img src="${cfg.logo}" style="max-height:50pt;max-width:110pt;object-fit:contain;display:block;margin-bottom:6pt">`:'';
-  const foot = [cfg.name?`<span><strong>${cfg.name}</strong></span>`:'', cfg.str?`<span>${cfg.str} · ${cfg.plz} ${cfg.ort}</span>`:'', cfg.email?`<span>${cfg.email}</span>`:''].filter(Boolean).join('');
-
-  document.getElementById('print-zone').innerHTML = `
-    <div class="pz-header" style="position:relative">
-      <div>${logoHtml}<div class="pz-firma">${cfg.name||'Meine Firma'}</div>
-      <div class="pz-abs">${cfg.str||''}, ${cfg.plz||''} ${cfg.ort||''}<br>${cfg.email||''}</div></div>
-      <div>
-        <div style="font-family:'Playfair Display',serif;font-size:20pt;color:#1e3a2f;font-weight:700">LIEFERSCHEIN</div>
-        <div class="pz-re-meta">
-          LS-Nr.: ${r.nr}<br>
-          Datum: ${fmtDate(r.datum)}<br>
-          ${r.lieferdatum?'Lieferdatum: '+fmtDate(r.lieferdatum)+'<br>':''}
-          ${r.kanal?'Kanal: '+r.kanal:''}
-        </div>
-      </div>
-    </div>
-    <hr class="pz-rule">
-    <div class="pz-emp-label">Empfänger</div>
-    <div class="pz-emp">${emp}</div>
-    <div class="pz-subject">${r.betreff||'Lieferung zu Rechnung '+r.nr}</div>
-    <table style="width:100%;border-collapse:collapse;margin:16pt 0;font-size:11pt">
-      <thead>
-        <tr style="background:#f5f5f0">
-          <th style="padding:10px 8px;text-align:left;font-size:9pt;text-transform:uppercase;letter-spacing:1px;color:#777;border-bottom:1px solid #ddd">Artikel / Beschreibung</th>
-          <th style="padding:10px 8px;text-align:center;font-size:9pt;text-transform:uppercase;letter-spacing:1px;color:#777;border-bottom:1px solid #ddd;width:80px">Menge</th>
-          <th style="padding:10px 8px;text-align:center;font-size:9pt;text-transform:uppercase;letter-spacing:1px;color:#777;border-bottom:1px solid #ddd;width:60px">✓</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div style="margin-top:40pt;display:flex;justify-content:space-between;font-size:10pt;color:#555">
-      <div>
-        <div style="margin-bottom:40pt">Unterschrift Absender:</div>
-        <div style="border-top:1px solid #999;width:200px;padding-top:4px">Datum, Unterschrift</div>
-      </div>
-      <div>
-        <div style="margin-bottom:40pt">Empfangsbestätigung:</div>
-        <div style="border-top:1px solid #999;width:200px;padding-top:4px">Datum, Unterschrift</div>
-      </div>
-    </div>
-    <div class="pz-foot">${foot}</div>`;
-  window.print();
-}
-
 // ══ KUNDEN ═════════════════════════════════════════
 function renderKuTable(q='') {
   const list=DB.kunden.filter(k=>!q||(k.name+k.firma+k.ort).toLowerCase().includes(q.toLowerCase()));
@@ -2272,6 +2331,7 @@ function loadCfgForm(){
   document.getElementById('cfg_prefix').value=c.prefix||'RE-';
   toggleMwst();
   applyLogoPreview();
+  applyDarkMode();
 }
 function toggleZielTage(){ /* placeholder */ }
 function toggleMwst(){document.getElementById('cfg_mwst_row').style.display=document.getElementById('cfg_steuer').value==='regel'?'':'none';}
@@ -2307,6 +2367,7 @@ function sBadge(s){const m={offen:'b-yellow',bezahlt:'b-green',ueberfaellig:'b-r
   document.getElementById('topbar-date').textContent=now.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   await loadDB();
   if(!DB.ausgaben) DB.ausgaben=[];
+  applyDarkMode();
   renderDash();
 })();
 </script>
