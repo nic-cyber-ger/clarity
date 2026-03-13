@@ -612,6 +612,7 @@ tbody tr:hover td { background: var(--cream); }
   </nav>
   <div class="sidebar-bottom">
     <div class="sidebar-version">Clarity v4.0 · Online ☁️</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:6px;letter-spacing:0.5px">© Niclas Schoth</div>
   </div>
 </div>
 
@@ -1003,6 +1004,18 @@ tbody tr:hover td { background: var(--cream); }
       </select>
     </div>
     <div class="form-row">
+      <label class="form-label">Verkaufskanal</label>
+      <select class="form-select" id="re-kanal">
+        <option value="">— Kein Kanal —</option>
+        <option value="Kleinanzeigen">Kleinanzeigen</option>
+        <option value="Etsy">Etsy</option>
+        <option value="Direkt">Direkt</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Sonstige">Sonstige</option>
+      </select>
+    </div>
+    </div>
+    <div class="form-row">
       <label class="form-label">Status</label>
       <select class="form-select" id="re-status">
         <option value="offen">Offen</option>
@@ -1354,7 +1367,7 @@ function renderDash() {
         <td><span class="tag">${r.nr}</span></td>
         <td style="color:var(--ink);font-weight:500">${r.kundeName||'—'}</td>
         <td style="color:var(--forest);font-weight:700">${fmt(r.brutto||0)} €</td>
-        <td>${sBadge(r.status)}</td>
+        <td>${sBadge(r.status)}${r.kanal?` <span class="badge b-blue" style="font-size:10px">${r.kanal}</span>`:''}</td>
       </tr>`).join('')}</tbody></table>`;
 
   // Top kunden
@@ -1388,6 +1401,7 @@ function renderReTable(q='') {
     <td><div style="display:flex;gap:6px">
       <button class="btn btn-ghost btn-sm" onclick="editRe('${r.id}')">✏️</button>
       <button class="btn btn-ghost btn-sm" onclick="druckRe('${r.id}')">🖨</button>
+        <button class="btn btn-ghost btn-sm" title="Lieferschein" onclick="druckLieferschein('${r.id}')">📦</button>
       <button class="btn-danger" onclick="delRe('${r.id}')">✕</button>
     </div></td>
   </tr>`).join('');
@@ -1413,6 +1427,7 @@ function openReModal(id=null) {
     document.getElementById('re-notiz').value=r.notiz||'';
     document.getElementById('re-kunde').value=r.kundeId||'';
     document.getElementById('re-zahlart').value=r.zahlart||'vorkasse';
+    document.getElementById('re-kanal').value=r.kanal||'';
     document.getElementById('re-rabatt').value=r.rabattPct||'';
     document.getElementById('re-rabatt-text').value=r.rabattText||'';
     r.positionen.forEach(p=>addPos(p.beschr,p.menge,p.preis));
@@ -1424,6 +1439,7 @@ function openReModal(id=null) {
     document.getElementById('re-status').value='offen';
     document.getElementById('re-kunde').value='';
     document.getElementById('re-zahlart').value=DB.config.ziel||'vorkasse';
+    document.getElementById('re-kanal').value='';
     document.getElementById('re-rabatt').value='';
     document.getElementById('re-rabatt-text').value='';
     addPos();
@@ -1432,7 +1448,7 @@ function openReModal(id=null) {
 }
 function editRe(id){openReModal(id);}
 
-function addPos(beschr='',menge=1,preis='') {
+function addPos(beschr='',menge=1,preis='',keinRabatt=false) {
   posIdx++;
   const i=posIdx;
   const dl='dl'+i;
@@ -1442,6 +1458,9 @@ function addPos(beschr='',menge=1,preis='') {
     <input list="${dl}" class="form-input" style="padding:9px 12px;font-size:13px" placeholder="Leistung / Artikel" value="${beschr}" oninput="autoFill(this,${i});calcSums()">
     <input type="number" class="form-input" style="padding:9px 12px;font-size:13px;text-align:right" value="${menge}" min="0" step="0.01" oninput="calcSums()">
     <input type="number" class="form-input" style="padding:9px 12px;font-size:13px;text-align:right" placeholder="0,00" value="${preis}" min="0" step="0.01" oninput="calcSums()">
+    <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ink3);white-space:nowrap;cursor:pointer" title="Position vom Rabatt ausschließen">
+      <input type="checkbox" id="kr${i}" onchange="calcSums()" ${keinRabatt?'checked':''}> kein Rabatt
+    </label>
     <button style="background:none;border:none;color:var(--sand);font-size:18px;cursor:pointer;padding:4px" onclick="rmPos(${i})">✕</button>`;
   document.getElementById('re-pos').appendChild(d);
 }
@@ -1450,12 +1469,18 @@ function autoFill(inp,i){const a=DB.artikel.find(x=>x.name===inp.value);if(a){co
 
 function calcSums() {
   let zwischensumme=0;
+  let rabattBasis=0; // only positions without "kein Rabatt"
+  let keinRabattSumme=0;
   document.querySelectorAll('#re-pos .pos-row').forEach(r=>{
     const ins=r.querySelectorAll('input');
-    zwischensumme+=(parseFloat(ins[1]?.value)||0)*(parseFloat(ins[2]?.value)||0);
+    const pos=(parseFloat(ins[1]?.value)||0)*(parseFloat(ins[2]?.value)||0);
+    zwischensumme+=pos;
+    const krCb=r.querySelector('input[type="checkbox"]');
+    if(krCb?.checked) keinRabattSumme+=pos;
+    else rabattBasis+=pos;
   });
   const rabattPct=parseFloat(document.getElementById('re-rabatt')?.value)||0;
-  const rabattBetrag=zwischensumme*(rabattPct/100);
+  const rabattBetrag=rabattBasis*(rabattPct/100);
   const netto=zwischensumme-rabattBetrag;
   const cfg=DB.config; const klein=cfg.steuer==='klein';
   let mwst=0,brutto=netto;
@@ -1492,10 +1517,12 @@ function buildReObj() {
   document.querySelectorAll('#re-pos .pos-row').forEach(r=>{
     const ins=r.querySelectorAll('input');
     const m=parseFloat(ins[1]?.value)||0,p=parseFloat(ins[2]?.value)||0;
-    netto+=m*p; pos.push({beschr:ins[0]?.value||'',menge:m,preis:p});
+    const krCb=r.querySelector('input[type="checkbox"]');
+    netto+=m*p; pos.push({beschr:ins[0]?.value||'',menge:m,preis:p,keinRabatt:krCb?.checked||false});
   });
   const rabattPct=parseFloat(document.getElementById('re-rabatt')?.value)||0;
-  const rabattBetrag=netto*(rabattPct/100);
+  const rabattBasis=pos.filter(p=>!p.keinRabatt).reduce((s,p)=>s+(p.menge*p.preis),0);
+  const rabattBetrag=rabattBasis*(rabattPct/100);
   const nettoNachRabatt=netto-rabattBetrag;
   const rabattText=document.getElementById('re-rabatt-text')?.value||'';
   const klein=cfg.steuer==='klein';
@@ -1510,6 +1537,7 @@ function buildReObj() {
     nr:document.getElementById('re-nr').value,
     kundeId, kundeName:kunde?(kunde.firma||kunde.name):'',
     zahlart:document.getElementById('re-zahlart')?.value||'vorkasse',
+    kanal:document.getElementById('re-kanal')?.value||'',
     datum, faellig:fD.toISOString().split('T')[0],
     lieferdatum:document.getElementById('re-lieferdatum').value,
     betreff:document.getElementById('re-betreff').value,
@@ -2096,6 +2124,66 @@ function applyLogoPreview(){
   else{img.style.display='none';ph.style.display='';rb.style.display='none';}
 }
 function removeLogo(){DB.config.logo='';saveDB().then(()=>applyLogoPreview());}
+
+
+// ══ LIEFERSCHEIN ══════════════════════════════════════
+function druckLieferschein(id) {
+  const r = DB.rechnungen.find(x=>x.id===id);
+  if(!r) return;
+  const cfg = DB.config;
+  const kunde = DB.kunden.find(k=>k.id===r.kundeId)||{};
+  const emp = [kunde.firma||kunde.name||r.kundeName, kunde.str, (kunde.plz+' '+kunde.ort).trim(), kunde.land&&kunde.land.toLowerCase()!=='deutschland'?kunde.land:''].filter(Boolean).join('<br>');
+  const rows = r.positionen.map(p=>`<tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #f0f0f0">${p.beschr}</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700">${p.menge}</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #f0f0f0;text-align:center">
+      <div style="width:20px;height:20px;border:1.5px solid #999;border-radius:3px;display:inline-block"></div>
+    </td>
+  </tr>`).join('');
+  const logoHtml = cfg.logo?`<img src="${cfg.logo}" style="max-height:50pt;max-width:110pt;object-fit:contain;display:block;margin-bottom:6pt">`:'';
+  const foot = [cfg.name?`<span><strong>${cfg.name}</strong></span>`:'', cfg.str?`<span>${cfg.str} · ${cfg.plz} ${cfg.ort}</span>`:'', cfg.email?`<span>${cfg.email}</span>`:''].filter(Boolean).join('');
+
+  document.getElementById('print-zone').innerHTML = `
+    <div class="pz-header" style="position:relative">
+      <div>${logoHtml}<div class="pz-firma">${cfg.name||'Meine Firma'}</div>
+      <div class="pz-abs">${cfg.str||''}, ${cfg.plz||''} ${cfg.ort||''}<br>${cfg.email||''}</div></div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:20pt;color:#1e3a2f;font-weight:700">LIEFERSCHEIN</div>
+        <div class="pz-re-meta">
+          LS-Nr.: ${r.nr}<br>
+          Datum: ${fmtDate(r.datum)}<br>
+          ${r.lieferdatum?'Lieferdatum: '+fmtDate(r.lieferdatum)+'<br>':''}
+          ${r.kanal?'Kanal: '+r.kanal:''}
+        </div>
+      </div>
+    </div>
+    <hr class="pz-rule">
+    <div class="pz-emp-label">Empfänger</div>
+    <div class="pz-emp">${emp}</div>
+    <div class="pz-subject">${r.betreff||'Lieferung zu Rechnung '+r.nr}</div>
+    <table style="width:100%;border-collapse:collapse;margin:16pt 0;font-size:11pt">
+      <thead>
+        <tr style="background:#f5f5f0">
+          <th style="padding:10px 8px;text-align:left;font-size:9pt;text-transform:uppercase;letter-spacing:1px;color:#777;border-bottom:1px solid #ddd">Artikel / Beschreibung</th>
+          <th style="padding:10px 8px;text-align:center;font-size:9pt;text-transform:uppercase;letter-spacing:1px;color:#777;border-bottom:1px solid #ddd;width:80px">Menge</th>
+          <th style="padding:10px 8px;text-align:center;font-size:9pt;text-transform:uppercase;letter-spacing:1px;color:#777;border-bottom:1px solid #ddd;width:60px">✓</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="margin-top:40pt;display:flex;justify-content:space-between;font-size:10pt;color:#555">
+      <div>
+        <div style="margin-bottom:40pt">Unterschrift Absender:</div>
+        <div style="border-top:1px solid #999;width:200px;padding-top:4px">Datum, Unterschrift</div>
+      </div>
+      <div>
+        <div style="margin-bottom:40pt">Empfangsbestätigung:</div>
+        <div style="border-top:1px solid #999;width:200px;padding-top:4px">Datum, Unterschrift</div>
+      </div>
+    </div>
+    <div class="pz-foot">${foot}</div>`;
+  window.print();
+}
 
 // ══ KUNDEN ═════════════════════════════════════════
 function renderKuTable(q='') {
