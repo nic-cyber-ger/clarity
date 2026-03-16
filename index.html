@@ -957,7 +957,7 @@ body.dark .empty {
             <span style="font-size:14px;font-weight:500;color:var(--ink)">Dark Mode</span>
             <div style="position:relative">
               <input type="checkbox" id="cfg_darkmode" onchange="toggleDarkMode()" style="display:none">
-              <div id="darkmode-track" style="width:52px;height:28px;background:var(--cream3);border-radius:14px;cursor:pointer;transition:background 0.3s;position:relative">
+              <div id="darkmode-track" onclick="document.getElementById('cfg_darkmode').click()" style="width:52px;height:28px;background:var(--cream3);border-radius:14px;cursor:pointer;transition:background 0.3s;position:relative">
                 <div id="darkmode-thumb" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:white;border-radius:50%;transition:transform 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></div>
               </div>
             </div>
@@ -1309,8 +1309,8 @@ body.dark .empty {
 <script>
 // ══ STATE ══════════════════════════════════════════
 // ══ SUPABASE ═══════════════════════════════════════
-const SB_URL = 'https://kntcxhudadpyfdyhihuo.supabase.co';
-const SB_KEY = 'sb_publishable_pRlWl0o3vNQHbErHNPbj1A_rJNLQlgg';
+const SB_URL = 'https://rhrvqrztzkaablnkcfla.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJocnZxcnp0emthYWJsbmtjZmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODAxOTcsImV4cCI6MjA4OTI1NjE5N30.q1qana3gvpqzr013xcpsOaLdvm8xIOdSkd6JKQxQXMs';
 
 let DB = {
   config: { name:'',str:'',plz:'',ort:'',email:'',tel:'',web:'',steuernr:'',ustid:'',iban:'',bic:'',steuer:'klein',mwst:'19',ziel:'14',prefix:'RE-',nextnr:1,logo:'' },
