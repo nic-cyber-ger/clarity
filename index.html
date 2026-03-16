@@ -1345,17 +1345,24 @@ async function loadDB() {
       sbFetch('ausgaben'), sbFetch('config'),
       sbFetch('lager').catch(()=>[]), sbFetch('lagerBewegungen').catch(()=>[])
     ]);
-    DB.kunden         = kunden.map(r=>r.data);
-    DB.artikel        = artikel.map(r=>r.data);
-    DB.rechnungen     = rechnungen.map(r=>r.data);
-    DB.ausgaben       = ausgaben.map(r=>r.data);
-    DB.lager          = lager.map(r=>r.data);
-    DB.lagerBewegungen= lagerBew.map(r=>r.data);
-    if(cfgRows.length>0) DB.config=cfgRows[0].data;
+    DB.kunden         = (kunden||[]).map(r=>r.data).filter(Boolean);
+    DB.artikel        = (artikel||[]).map(r=>r.data).filter(Boolean);
+    DB.rechnungen     = (rechnungen||[]).map(r=>r.data).filter(Boolean);
+    DB.ausgaben       = (ausgaben||[]).map(r=>r.data).filter(Boolean);
+    DB.lager          = (lager||[]).map(r=>r.data).filter(Boolean);
+    DB.lagerBewegungen= (lagerBew||[]).map(r=>r.data).filter(Boolean);
+    if(cfgRows&&cfgRows.length>0&&cfgRows[0].data) DB.config={...DB.config,...cfgRows[0].data};
     setSyncStatus('ok');
   } catch(e) {
-    console.error(e);
+    console.error('loadDB error:', e);
     setSyncStatus('error');
+    // Ensure DB arrays are always valid even on error
+    if(!DB.kunden) DB.kunden=[];
+    if(!DB.artikel) DB.artikel=[];
+    if(!DB.rechnungen) DB.rechnungen=[];
+    if(!DB.ausgaben) DB.ausgaben=[];
+    if(!DB.lager) DB.lager=[];
+    if(!DB.lagerBewegungen) DB.lagerBewegungen=[];
   }
 }
 
