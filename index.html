@@ -612,29 +612,37 @@ tbody tr:hover { background: var(--surface2); }
 /* ── PRINT ── */
 #print-zone { display: none; }
 @media print {
+  @page { size: A4; margin: 12mm 16mm; }
   body > * { display: none !important; }
-  #print-zone { display: block !important; font-family: 'DM Sans', sans-serif; font-size: 11pt; color: #111; }
-  .pz-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20pt; }
-  .pz-firma { font-family: 'DM Serif Display', serif; font-size: 18pt; color: #1a2820; font-weight: 700; }
+  #print-zone {
+    display: block !important;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11.5pt;
+    color: #111;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .pz-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24pt; }
+  .pz-firma { font-family: 'DM Serif Display', serif; font-size: 20pt; color: #1a2820; font-weight: 700; }
   .pz-abs { font-size: 9pt; color: #666; margin-top: 4pt; line-height: 1.6; }
   .pz-re-label { font-family: 'DM Serif Display', serif; font-size: 22pt; color: #1a2820; text-align: right; }
   .pz-re-meta { font-size: 9pt; color: #555; text-align: right; margin-top: 4pt; line-height: 1.8; }
   .pz-rule { border: none; border-top: 1.5pt solid #1a2820; margin: 14pt 0; }
   .pz-emp-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1pt; color: #999; margin-bottom: 3pt; }
-  .pz-emp { font-size: 11pt; line-height: 1.7; margin-bottom: 16pt; }
-  .pz-subject { font-family: 'DM Serif Display', serif; font-size: 15pt; margin-bottom: 14pt; color: #1a2820; }
+  .pz-emp { font-size: 11pt; line-height: 1.8; margin-bottom: 20pt; }
+  .pz-subject { font-family: 'DM Serif Display', serif; font-size: 16pt; margin-bottom: 16pt; color: #1a2820; }
   .pz-table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; font-size: 10pt; }
-  .pz-table th { padding: 7pt 8pt; background: #f4f1ec; text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.8pt; color: #666; border-bottom: 1pt solid #ddd; }
-  .pz-table td { padding: 8pt; border-bottom: 0.5pt solid #eee; }
+  .pz-table th { padding: 8pt 10pt; background: #f4f1ec; text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.8pt; color: #666; border-bottom: 1pt solid #ddd; }
+  .pz-table td { padding: 10pt; border-bottom: 0.5pt solid #eee; }
   .pz-sumwrap { display: flex; justify-content: flex-end; margin-bottom: 14pt; }
   .pz-sumbox { width: 220pt; }
-  .pz-srow { display: flex; justify-content: space-between; padding: 3pt 0; font-size: 10pt; color: #444; border-bottom: 0.5pt solid #eee; }
+  .pz-srow { display: flex; justify-content: space-between; padding: 5pt 0; font-size: 11pt; color: #444; border-bottom: 0.5pt solid #eee; }
   .pz-srow-red { color: #b83232; }
-  .pz-stotal { display: flex; justify-content: space-between; padding: 8pt 0 3pt; font-size: 16pt; font-family: 'DM Serif Display', serif; color: #1a2820; }
-  .pz-hint { background: #f4f1ec; border-left: 3pt solid #1a2820; padding: 8pt 10pt; font-size: 9pt; color: #444; margin-bottom: 10pt; line-height: 1.5; }
-  .pz-note { font-size: 10pt; color: #333; margin-bottom: 8pt; line-height: 1.6; }
+  .pz-stotal { display: flex; justify-content: space-between; padding: 10pt 0 4pt; font-size: 18pt; font-family: 'DM Serif Display', serif; color: #1a2820; }
+  .pz-hint { background: #f4f1ec; border-left: 3pt solid #1a2820; padding: 10pt 12pt; font-size: 10pt; color: #444; margin-bottom: 14pt; line-height: 1.6; }
+  .pz-note { font-size: 11pt; color: #333; margin-bottom: 12pt; line-height: 1.7; }
   .pz-bezahlt { display: inline-block; border: 3pt solid #2a5a3a; color: #2a5a3a; padding: 4pt 14pt; font-size: 16pt; font-weight: 800; letter-spacing: 3pt; transform: rotate(-12deg); position: absolute; top: 50pt; right: 20pt; opacity: 0.4; }
-  .pz-foot { border-top: 0.5pt solid #ccc; padding-top: 8pt; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6pt; font-size: 8.5pt; color: #666; margin-top: 20pt; }
+  .pz-foot { border-top: 0.5pt solid #ccc; padding-top: 10pt; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6pt; font-size: 9pt; color: #666; margin-top: 30pt; }
 }
 
 /* ── RESPONSIVE ── */
