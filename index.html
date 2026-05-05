@@ -648,21 +648,59 @@ tbody tr:hover { background: var(--surface2); }
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   :root { --sidebar-w: 0px; }
-  #sidebar { transform: translateX(-240px); width: 240px; }
-  #sidebar.open { transform: translateX(0); }
+  #sidebar { transform: translateX(-240px); width: 240px; z-index: 400; }
+  #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.3); }
+  #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 399; }
+  #sidebar-overlay.open { display: block; }
   #main { margin-left: 0; }
   #hamburger { display: block; }
-  .content { padding: 20px 16px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .kanban { grid-template-columns: repeat(2, 1fr); }
-  .g2 { grid-template-columns: 1fr; }
-  .topbar { padding: 0 16px; }
-  .pos-item { grid-template-columns: 1fr 70px 90px auto auto; }
+  .content { padding: 16px 12px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .kanban { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .g2 { grid-template-columns: 1fr; gap: 0; }
+  .g3 { grid-template-columns: 1fr; gap: 0; }
+  .topbar { padding: 0 12px; }
+  .topbar-date { display: none; }
+  .pos-item { grid-template-columns: 1fr 60px 80px auto auto; gap: 4px; }
+  .modal-inner { margin: 8px; border-radius: 12px; }
+  .modal-body { padding: 14px 16px; }
+  .modal-header { padding: 14px 16px 12px; }
+  .modal-footer { padding: 12px 16px; gap: 8px; }
+  .modal-footer .btn { flex: 1; justify-content: center; font-size: 12px; padding: 9px 10px; }
+  .page-header { margin-bottom: 16px; }
+  .page-title { font-size: 22px; }
+  .card-body { padding: 14px; }
+  .card-header { padding: 14px 16px 12px; }
+  table { font-size: 12px; }
+  thead th { padding: 8px 10px; font-size: 10px; }
+  tbody td { padding: 10px 10px; }
+  .btn { padding: 8px 14px; font-size: 13px; }
+  .search-bar { gap: 8px; }
+  .search-input { min-width: 0; }
+  .sumbox { padding: 12px; }
+  .sumbox-total { font-size: 18px; }
+  .kanban-card { padding: 10px; }
+  .stat-card { padding: 14px 16px; }
+  .stat-card-value { font-size: 22px; }
+  .stat-card-deco { display: none; }
 }
+
 @media (max-width: 500px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .kanban { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .stat-card-value { font-size: 20px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kanban { grid-template-columns: 1fr; gap: 8px; }
+  .stat-card-value { font-size: 18px; }
+  .stat-card-icon { font-size: 18px; margin-bottom: 6px; }
+  .page-header { flex-direction: column; align-items: flex-start; }
+  .modal-footer { flex-direction: column; }
+  .modal-footer .btn { width: 100%; }
+  .pos-item { grid-template-columns: 1fr 55px 75px auto auto; font-size: 12px; }
+  .content { padding: 12px 10px; }
+  .topbar { height: 52px; }
+  .topbar-title { font-size: 17px; }
+  .kanban-card-actions { flex-wrap: wrap; }
+  .kbtn { font-size: 10px; padding: 3px 7px; }
+  /* Hide less important table columns on small screens */
+  .hide-mobile { display: none !important; }
 }
 </style>
 </head>
@@ -737,7 +775,7 @@ tbody tr:hover { background: var(--surface2); }
       <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nr.</th><th>Datum</th><th>Kunde</th><th>Kanal</th><th>Betrag</th><th>Status</th><th>Aktionen</th></tr></thead>
+            <thead><tr><th>Nr.</th><th>Datum</th><th>Kunde</th><th class="hide-mobile">Kanal</th><th>Betrag</th><th>Status</th><th>Aktionen</th></tr></thead>
             <tbody id="re-tbody"></tbody>
           </table>
         </div>
@@ -779,7 +817,7 @@ tbody tr:hover { background: var(--surface2); }
       <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Name</th><th>Firma</th><th>E-Mail</th><th>Ort</th><th>Rechnungen</th><th>Umsatz</th><th>Aktionen</th></tr></thead>
+            <thead><tr><th>Name</th><th class="hide-mobile">Firma</th><th class="hide-mobile">E-Mail</th><th class="hide-mobile">Ort</th><th>Rechnungen</th><th>Umsatz</th><th>Aktionen</th></tr></thead>
             <tbody id="ku-tbody"></tbody>
           </table>
         </div>
@@ -1094,8 +1132,8 @@ tbody tr:hover { background: var(--surface2); }
       </div>
       <div class="form-row"><label class="form-label">Straße + Nr.</label><input class="form-input" id="ku-str"></div>
       <div class="g2">
-        <div class="form-row"><label class="form-label">PLZ</label><input class="form-input" id="ku-plz"></div>
-        <div class="form-row"><label class="form-label">Ort</label><input class="form-input" id="ku-ort"></div>
+        <div class="form-row"><label class="form-label">PLZ</label><input class="form-input" id="ku-plz" maxlength="5" oninput="plzLookup(this.value,'ku-ort')"></div>
+        <div class="form-row"><label class="form-label">Ort</label><input class="form-input" id="ku-ort" oninput="ortLookup(this.value,'ku-plz')"></div>
       </div>
       <div class="form-row"><label class="form-label">Land</label><input class="form-input" id="ku-land" value="Deutschland"></div>
       <div class="form-row"><label class="form-label">Notiz</label><textarea class="form-textarea" id="ku-notiz" style="min-height:60px"></textarea></div>
@@ -1327,17 +1365,11 @@ function showPage(p) {
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-
-// Close sidebar when clicking outside
-document.addEventListener('click', e => {
   const sb = document.getElementById('sidebar');
-  const hb = document.getElementById('hamburger');
-  if(sb.classList.contains('open') && !sb.contains(e.target) && e.target !== hb) {
-    sb.classList.remove('open');
-  }
-});
+  const ov = document.getElementById('sidebar-overlay');
+  sb.classList.toggle('open');
+  if(ov) ov.classList.toggle('open', sb.classList.contains('open'));
+}
 
 // ══ MODALS ════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -1500,7 +1532,7 @@ function renderRechnungen(q='') {
     <td style="font-weight:600;color:var(--ink);white-space:nowrap">${r.nr}</td>
     <td style="white-space:nowrap">${fmtDate(r.datum)}</td>
     <td style="font-weight:500">${r.kundeName||'—'}</td>
-    <td>${r.kanal?`<span class="badge badge-blue" style="font-size:10px">${r.kanal}</span>`:'—'}</td>
+    <td class="hide-mobile">${r.kanal?`<span class="badge badge-blue" style="font-size:10px">${r.kanal}</span>`:'—'}</td>
     <td style="font-weight:700;color:var(--accent);white-space:nowrap">${fmt(r.brutto||0)} €${r.rabattPct>0?` <span style="font-size:10px;color:var(--red)">-${r.rabattPct}%</span>`:''}</td>
     <td>${statusBadge(r.status)}</td>
     <td>
@@ -1777,6 +1809,23 @@ function vorschau() {
       ${cfg.name?`<span><strong>${cfg.name}</strong></span>`:''}${cfg.iban?`<span>IBAN: ${cfg.iban}</span>`:''}${cfg.steuernr?`<span>Steuernr.: ${cfg.steuernr}</span>`:''}
     </div>`;
   openModal('modal-vorschau');
+}
+
+
+// ══ PLZ AUTOFILL ═════════════════════════════════════
+async function plzLookup(plz, ortId) {
+  if(plz.length !== 5) return;
+  try {
+    const r = await fetch(`https://api.zippopotam.us/de/${plz}`);
+    if(!r.ok) return;
+    const d = await r.json();
+    const ort = d.places?.[0]?.['place name'];
+    if(ort) document.getElementById(ortId).value = ort;
+  } catch(e) {}
+}
+
+async function ortLookup(ort, plzId) {
+  // Can't reliably reverse lookup ort→plz, so skip
 }
 
 // ══ AUSGABEN ═════════════════════════════════════════
