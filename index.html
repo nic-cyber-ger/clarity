@@ -1242,6 +1242,24 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
           </div>
         </div>
       </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div><div class="card-title">🎁 Rabattcode auf Rechnung</div><div class="card-sub">Zeigt einen Hinweis mit Code auf jeder Rechnung</div></div>
+          <div class="toggle-wrap" onclick="toggleRabattcode()">
+            <div class="toggle-track" id="rabattcode-track"><div class="toggle-thumb"></div></div>
+          </div>
+        </div>
+        <div class="card-body" id="rabattcode-body" style="display:none">
+          <div class="g2">
+            <div class="form-row"><label class="form-label">Rabattcode</label><input class="form-input" id="cfg-rabattcode" placeholder="z.B. TREUE10" oninput="updateRabattcodePreview()"></div>
+            <div class="form-row"><label class="form-label">Rabatt-Text</label><input class="form-input" id="cfg-rabattcode-text" placeholder="10% auf deine nächste Bestellung" oninput="updateRabattcodePreview()"></div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--ink3);margin-top:4px">
+            💡 Vorschau: „Danke für deinen Einkauf! Nutze den Code <strong id="rabattcode-preview-code">CODE</strong> für <strong id="rabattcode-preview-text">Rabatt</strong> bei deiner nächsten Bestellung."
+          </div>
+        </div>
+      </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="saveConfig()">💾 Einstellungen speichern</button>
         <button class="btn btn-ghost" onclick="exportData()">⬇ Backup exportieren</button>
@@ -1596,6 +1614,8 @@ async function saveConfig() {
   DB.config.zahlart = v('cfg-zahlart');
   DB.config.nextnr  = parseInt(v('cfg-nextnr'))||1;
   DB.config.prefix  = v('cfg-prefix');
+  DB.config.rabattcode = v('cfg-rabattcode');
+  DB.config.rabattcodeText = v('cfg-rabattcode-text');
   setSync('syncing');
   try {
     await sbFetch('config','POST',{id:'main',data:DB.config,updated_at:new Date().toISOString()});
@@ -1672,6 +1692,29 @@ function zahlartText(r) {
   const tage = parseInt(za);
   const bis = r.faellig ? ` bis ${fmtDate(r.faellig)}` : '';
   return `Bitte überweisen Sie <strong>${betrag} €</strong> innerhalb von ${tage} Tagen${bis} unter Angabe der Rechnungsnummer <strong>${nr}</strong>.`;
+}
+
+
+// ══ RABATTCODE ═══════════════════════════════════════
+function toggleRabattcode() {
+  const on = !DB.config.rabattcodeAktiv;
+  DB.config.rabattcodeAktiv = on;
+  applyRabattcodeUI();
+}
+function applyRabattcodeUI() {
+  const on = DB.config.rabattcodeAktiv||false;
+  const track = document.getElementById('rabattcode-track');
+  const body = document.getElementById('rabattcode-body');
+  if(track) track.classList.toggle('on', on);
+  if(body) body.style.display = on ? '' : 'none';
+}
+function updateRabattcodePreview() {
+  const code = document.getElementById('cfg-rabattcode')?.value || 'CODE';
+  const text = document.getElementById('cfg-rabattcode-text')?.value || 'Rabatt';
+  const pc = document.getElementById('rabattcode-preview-code');
+  const pt = document.getElementById('rabattcode-preview-text');
+  if(pc) pc.textContent = code;
+  if(pt) pt.textContent = text;
 }
 
 // ══ DARK MODE ════════════════════════════════════════
@@ -2140,6 +2183,7 @@ function druckRe(id) {
     <div class="pz-sumwrap"><div class="pz-sumbox">${sumH}</div></div>
     <div class="pz-hint">${steuerH}</div>
     ${zahlH?`<div class="pz-note">${zahlH}</div>`:''}
+    ${cfg.rabattcodeAktiv&&cfg.rabattcode?`<div style="background:#f4f4f4;border:1px dashed #999;border-radius:4pt;padding:8pt 10pt;font-size:9.5pt;color:#333;margin-bottom:10pt;text-align:center">🎁 Danke für deinen Einkauf! Nutze den Code <strong>${cfg.rabattcode}</strong> für ${cfg.rabattcodeText||'einen Rabatt'} bei deiner nächsten Bestellung.</div>`:''}
     ${r.notiz?`<div class="pz-note"><em>${r.notiz}</em></div>`:''}
     <div class="pz-foot">${foot}</div>`;
   window.print();
@@ -2189,6 +2233,7 @@ function vorschau() {
     <div style="display:flex;justify-content:flex-end;margin-bottom:18px"><div style="width:220px">${sumRows}</div></div>
     <div style="background:#f4f1ec;border-left:3px solid #1a2820;padding:9px 12px;font-size:11px;line-height:1.6;margin-bottom:14px;color:#333">${cfg.steuer==='klein'?'<strong>Hinweis gem. § 19 UStG:</strong> Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.':`USt-IdNr.: ${cfg.ustid||'—'}`}</div>
     ${zahlH?`<div style="font-size:11px;color:#555;line-height:1.6;margin-bottom:14px">${zahlH}</div>`:''}
+    ${cfg.rabattcodeAktiv&&cfg.rabattcode?`<div style="background:#f4f4f4;border:1px dashed #999;border-radius:6px;padding:10px 12px;font-size:12px;color:#333;margin-bottom:14px;text-align:center">🎁 Danke für deinen Einkauf! Nutze den Code <strong>${cfg.rabattcode}</strong> für ${cfg.rabattcodeText||'einen Rabatt'} bei deiner nächsten Bestellung.</div>`:''}
     <div style="border-top:1px solid #ddd;padding-top:10px;font-size:10px;color:#888;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px">
       ${cfg.name?`<span><strong>${cfg.name}</strong></span>`:''}${cfg.iban?`<span>IBAN: ${cfg.iban}</span>`:''}${cfg.steuernr?`<span>Steuernr.: ${cfg.steuernr}</span>`:''}
     </div>`;
@@ -2965,6 +3010,10 @@ function loadCfgForm(){
   toggleMwst();
   applyLogo();
   applyDark();
+  document.getElementById('cfg-rabattcode').value = c.rabattcode||'';
+  document.getElementById('cfg-rabattcode-text').value = c.rabattcodeText||'';
+  applyRabattcodeUI();
+  updateRabattcodePreview();
 }
 
 function exportData(){
