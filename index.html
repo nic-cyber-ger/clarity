@@ -12,28 +12,28 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f4f1ec;
-  --bg2: #ede9e1;
-  --bg3: #e4dfd5;
+  --bg: #f5f5f4;
+  --bg2: #ececeb;
+  --bg3: #e0e0df;
   --surface: #ffffff;
-  --surface2: #f9f7f3;
-  --border: #ddd8cf;
-  --ink: #1a1a1a;
-  --ink2: #3d3d3d;
-  --ink3: #777068;
-  --accent: #2d4a3e;
-  --accent2: #3d6b56;
-  --accent3: #5a9478;
-  --gold: #c8943a;
-  --gold2: #e8b055;
+  --surface2: #fafafa;
+  --border: #e4e4e3;
+  --ink: #111111;
+  --ink2: #3a3a3a;
+  --ink3: #8a8a88;
+  --accent: #111111;
+  --accent2: #333333;
+  --accent3: #555555;
+  --gold: #6a6a68;
+  --gold2: #8a8a88;
   --red: #b83232;
-  --red2: #e05050;
-  --blue: #2a4a7a;
+  --red2: #d05050;
+  --blue: #4a4a48;
   --yellow: #8a6a10;
-  --green: #2a5a3a;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
-  --shadow2: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.10);
-  --shadow3: 0 8px 24px rgba(0,0,0,0.12), 0 24px 64px rgba(0,0,0,0.14);
+  --green: #2a6a3a;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow2: 0 2px 8px rgba(0,0,0,0.06), 0 8px 28px rgba(0,0,0,0.08);
+  --shadow3: 0 8px 24px rgba(0,0,0,0.10), 0 24px 64px rgba(0,0,0,0.12);
   --r: 12px;
   --r2: 8px;
   --sidebar-w: 240px;
@@ -41,23 +41,26 @@
 
 /* DARK MODE */
 body.dark {
-  --bg: #131a18;
-  --bg2: #1a2420;
-  --bg3: #212e29;
-  --surface: #1e2a26;
-  --surface2: #243028;
-  --border: #2d3d38;
-  --ink: #e8f0ec;
-  --ink2: #c0d0c8;
-  --ink3: #7a9a8e;
-  --accent: #5a9478;
-  --accent2: #6aaa8a;
-  --accent3: #7ac09a;
+  --bg: #141414;
+  --bg2: #1c1c1c;
+  --bg3: #262626;
+  --surface: #1e1e1e;
+  --surface2: #242424;
+  --border: #2e2e2e;
+  --ink: #f0f0f0;
+  --ink2: #c8c8c8;
+  --ink3: #8a8a88;
+  --accent: #f0f0f0;
+  --accent2: #d0d0d0;
+  --accent3: #a0a0a0;
   --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.3);
   --shadow2: 0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.4);
 }
-body.dark #sidebar { background: #0e1512; }
-body.dark .topbar { background: rgba(19,26,24,0.95); }
+body.dark #sidebar { background: #0a0a0a; }
+body.dark .topbar { background: rgba(20,20,20,0.95); }
+body.dark .btn-primary { background: #f0f0f0; color: #111; }
+body.dark .btn-primary:hover { background: #d0d0d0; }
+body.dark .kanban-header { filter: grayscale(0.5); }
 body.dark .modal-inner { background: var(--surface); }
 body.dark .form-input, body.dark .form-select, body.dark .form-textarea { background: var(--bg2); color: var(--ink); }
 body.dark .sumbox { background: var(--bg2); }
@@ -80,7 +83,7 @@ body {
 #sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
-  background: #1a2820;
+  background: #111111;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -94,12 +97,13 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 .sidebar-logo-name {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
   font-size: 22px;
   color: #fff;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.3px;
 }
-.sidebar-logo-name span { color: var(--gold2); }
+.sidebar-logo-name span { color: #8a8a88; }
 .sidebar-logo-sub {
   font-size: 10px;
   color: rgba(255,255,255,0.25);
@@ -141,7 +145,7 @@ nav { padding: 16px 0; flex: 1; overflow-y: auto; }
   position: absolute;
   left: 0; top: 6px; bottom: 6px;
   width: 3px;
-  background: var(--gold2);
+  background: #ffffff;
   border-radius: 0 2px 2px 0;
 }
 .nav-icon { width: 18px; text-align: center; font-size: 15px; }
@@ -174,7 +178,7 @@ nav { padding: 16px 0; flex: 1; overflow-y: auto; }
 
 .topbar {
   height: 60px;
-  background: rgba(244,241,236,0.9);
+  background: rgba(245,245,244,0.92);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -186,9 +190,11 @@ nav { padding: 16px 0; flex: 1; overflow-y: auto; }
   z-index: 100;
 }
 .topbar-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 20px;
-  color: var(--accent);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--ink);
+  letter-spacing: -0.3px;
 }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 .topbar-date {
@@ -286,7 +292,7 @@ nav { padding: 16px 0; flex: 1; overflow-y: auto; }
   flex-wrap: wrap;
   gap: 12px;
 }
-.page-title { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); }
+.page-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; color: var(--ink); letter-spacing: -0.5px; }
 .page-sub { font-size: 13px; color: var(--ink3); margin-top: 3px; }
 
 /* ── STAT CARDS ── */
@@ -309,13 +315,13 @@ nav { padding: 16px 0; flex: 1; overflow-y: auto; }
 .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow2); }
 .stat-card-icon { font-size: 22px; margin-bottom: 10px; }
 .stat-card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink3); font-weight: 600; margin-bottom: 6px; }
-.stat-card-value { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); line-height: 1; }
+.stat-card-value { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; color: var(--ink); line-height: 1; letter-spacing: -0.5px; }
 .stat-card-meta { font-size: 12px; color: var(--ink3); margin-top: 6px; }
 .stat-card-deco { position: absolute; right: 14px; top: 10px; font-size: 42px; opacity: 0.06; font-family: 'DM Serif Display', serif; }
-.sc-green { border-left: 3px solid var(--green); }
-.sc-gold { border-left: 3px solid var(--gold); }
+.sc-green { border-left: 3px solid #111; }
+.sc-gold { border-left: 3px solid #8a8a88; }
 .sc-red { border-left: 3px solid var(--red); }
-.sc-blue { border-left: 3px solid var(--blue); }
+.sc-blue { border-left: 3px solid #c0c0c0; }
 
 /* ── TABLE ── */
 .table-wrap { overflow-x: auto; }
@@ -361,12 +367,103 @@ tbody tr:hover { background: var(--surface2); }
   font-weight: 600;
   white-space: nowrap;
 }
-.badge-green { background: #e8f5ee; color: #2a5a3a; }
+.badge-green { background: #eaf3ec; color: #2a5a3a; }
 .badge-red { background: #fde8e8; color: #8a2020; }
 .badge-yellow { background: #fdf3e0; color: #8a6010; }
-.badge-blue { background: #e8eef8; color: #2a4070; }
+.badge-blue { background: #ececeb; color: #4a4a48; }
 .badge-gray { background: var(--bg2); color: var(--ink3); }
-.badge-gold { background: #fdf0e0; color: #8a5010; }
+.badge-gold { background: #ececeb; color: #6a6a68; }
+
+
+
+/* ── KUNDEN GRID ── */
+.ku-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.ku-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  position: relative;
+}
+.ku-card:hover { transform: translateY(-2px); box-shadow: var(--shadow2); border-color: var(--ink3); }
+.ku-avatar {
+  width: 42px; height: 42px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+.ku-card-name { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.ku-card-firma { font-size: 12px; color: var(--ink3); margin-bottom: 10px; }
+.ku-card-meta { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--ink3); margin-bottom: 12px; }
+.ku-card-stats { display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
+.ku-stat { flex: 1; }
+.ku-stat-val { font-size: 15px; font-weight: 700; color: var(--ink); }
+.ku-stat-label { font-size: 10px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
+.ku-card-actions { position: absolute; top: 14px; right: 14px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+.ku-card:hover .ku-card-actions { opacity: 1; }
+@media (hover: none) { .ku-card-actions { opacity: 1; } }
+
+/* ── TABS ── */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  background: var(--bg2);
+  padding: 4px;
+  border-radius: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tab {
+  flex: 1;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.tab:hover { color: var(--ink); }
+.tab.active {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.tab-count {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--bg3);
+  color: var(--ink3);
+  padding: 1px 7px;
+  border-radius: 10px;
+  min-width: 18px;
+}
+.tab.active .tab-count { background: var(--ink); color: #fff; }
+body.dark .tab.active { background: var(--bg3); }
+body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
 
 /* ── SEARCH ── */
 .search-bar {
@@ -452,7 +549,7 @@ tbody tr:hover { background: var(--surface2); }
   padding: 20px 24px 16px;
   border-bottom: 1px solid var(--border);
 }
-.modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); }
+.modal-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 18px; color: var(--ink); letter-spacing: -0.3px; }
 .modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--ink3); padding: 4px; border-radius: 6px; transition: all 0.15s; }
 .modal-close:hover { color: var(--ink); background: var(--bg2); }
 .modal-body { padding: 20px 24px; }
@@ -513,8 +610,9 @@ tbody tr:hover { background: var(--surface2); }
   justify-content: space-between;
   align-items: center;
   padding: 10px 0 4px;
-  font-family: 'DM Serif Display', serif;
-  font-size: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
   color: var(--ink);
   border-top: 1px solid var(--border);
   margin-top: 6px;
@@ -563,21 +661,21 @@ tbody tr:hover { background: var(--surface2); }
   transition: all 0.15s;
 }
 .kbtn:active { transform: scale(0.96); }
-.kbtn-blue { background: #e8eef8; color: #2a4070; }
-.kbtn-orange { background: #fdf0e0; color: #8a5010; }
-.kbtn-green { background: #e8f5ee; color: #2a5a3a; }
-.kbtn-purple { background: #f0e8f8; color: #6a2a8a; }
-.kbtn-gold { background: #fdf3e0; color: #8a6010; }
+.kbtn-blue { background: #ececeb; color: #3a3a3a; }
+.kbtn-orange { background: #e0e0df; color: #2a2a2a; }
+.kbtn-green { background: #111111; color: #ffffff; }
+.kbtn-purple { background: #3a3a3a; color: #ffffff; }
+.kbtn-gold { background: #d4d4d3; color: #1a1a1a; }
 .kbtn-gray { background: var(--bg2); color: var(--ink3); }
 
 /* ── HINT ── */
 .hint {
-  background: #e8f5ee;
-  border: 1px solid #b8d8c8;
+  background: #ececeb;
+  border: 1px solid #d4d4d3;
   border-radius: var(--r2);
   padding: 12px 16px;
   font-size: 13px;
-  color: #2a5a3a;
+  color: #3a3a3a;
   margin-bottom: 20px;
 }
 
@@ -657,6 +755,8 @@ tbody tr:hover { background: var(--surface2); }
   .content { padding: 16px 12px; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .kanban { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-two { grid-template-columns: 1fr !important; }
+  .stat-prog-grid { grid-template-columns: 1fr !important; }
   .g2 { grid-template-columns: 1fr; gap: 0; }
   .g3 { grid-template-columns: 1fr; gap: 0; }
   .topbar { padding: 0 12px; }
@@ -709,12 +809,23 @@ tbody tr:hover { background: var(--surface2); }
 <!-- SIDEBAR -->
 <div id="sidebar">
   <div class="sidebar-logo">
-    <div class="sidebar-logo-name">Clar<span>ity</span></div>
-    <div class="sidebar-logo-sub">Business Manager</div>
+    <div style="display:flex;align-items:center;gap:11px">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <rect x="1" y="1" width="32" height="32" rx="7" stroke="#fff" stroke-width="2"/>
+        <path d="M17 7 L26 12 L26 22 L17 27 L8 22 L8 12 Z" stroke="#fff" stroke-width="1.6" fill="none"/>
+        <path d="M17 7 L17 17 M17 17 L26 12 M17 17 L8 12" stroke="#fff" stroke-width="1.6"/>
+        <path d="M17 17 L17 27" stroke="#8a8a88" stroke-width="1.6"/>
+      </svg>
+      <div>
+        <div class="sidebar-logo-name" style="font-size:19px">Clarity</div>
+        <div class="sidebar-logo-sub" style="margin-top:2px">Baltic3DPrints</div>
+      </div>
+    </div>
   </div>
   <nav>
     <div class="nav-section">Übersicht</div>
     <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-item" onclick="showPage('statistik')"><span class="nav-icon">📈</span> Statistik</div>
     <div class="nav-section">Finanzen</div>
     <div class="nav-item" onclick="showPage('rechnungen')"><span class="nav-icon">🧾</span> Rechnungen</div>
     <div class="nav-item" onclick="showPage('ausgaben')"><span class="nav-icon">💸</span> Ausgaben</div>
@@ -752,10 +863,47 @@ tbody tr:hover { background: var(--surface2); }
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="page-header">
-        <div><div class="page-title">Guten Morgen 👋</div><div class="page-sub">Dein Business auf einen Blick</div></div>
+        <div><div class="page-title" id="dash-greeting">Willkommen 👋</div><div class="page-sub">Dein Business auf einen Blick</div></div>
       </div>
       <div class="stats-grid" id="dash-stats"></div>
+      <div class="card" id="dash-warn" style="display:none;padding:14px 18px;margin-bottom:20px;border-left:3px solid var(--ink)"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" id="dash-charts"></div>
+    </div>
+
+
+    <!-- STATISTIK -->
+    <div class="page" id="page-statistik">
+      <div class="page-header">
+        <div><div class="page-title">Statistik</div><div class="page-sub">Verkäufe, Produkte & Prognose</div></div>
+        <select class="form-select" id="stat-monat" onchange="renderStatistik()" style="width:180px"></select>
+      </div>
+
+      <!-- Prognose Card -->
+      <div class="card" style="margin-bottom:20px" id="stat-prognose"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px" class="stat-two">
+        <!-- Produktverkäufe im gewählten Monat -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">📦 Produktverkäufe</div><div class="card-sub" id="stat-produkte-sub">Gewählter Monat</div></div></div>
+          <div class="card-body" id="stat-produkte"></div>
+        </div>
+        <!-- Top Produkte gesamt -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">🏆 Top Produkte (Gesamt)</div><div class="card-sub">Alle Zeit</div></div></div>
+          <div class="card-body" id="stat-top"></div>
+        </div>
+      </div>
+
+      <!-- Monatsvergleich Tabelle -->
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">📅 Monatsvergleich</div><div class="card-sub">Umsatz, Verkäufe & Gewinn pro Monat</div></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Monat</th><th>Verkäufe</th><th>Artikel verkauft</th><th>Umsatz</th><th>Ausgaben</th><th>Gewinn</th><th>Ø pro Verkauf</th></tr></thead>
+            <tbody id="stat-monate-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- RECHNUNGEN -->
@@ -764,16 +912,24 @@ tbody tr:hover { background: var(--surface2); }
         <div><div class="page-title">Rechnungen</div><div class="page-sub">Alle Rechnungen verwalten</div></div>
         <button class="btn btn-primary" onclick="openReModal()">＋ Neue Rechnung</button>
       </div>
+      <div class="tab-bar" id="re-tabs">
+        <button class="tab active" data-status="" onclick="setReTab(this)">Alle <span class="tab-count" id="tab-cnt-alle">0</span></button>
+        <button class="tab" data-status="offen" onclick="setReTab(this)">Offen <span class="tab-count" id="tab-cnt-offen">0</span></button>
+        <button class="tab" data-status="bezahlt" onclick="setReTab(this)">Bezahlt <span class="tab-count" id="tab-cnt-bezahlt">0</span></button>
+        <button class="tab" data-status="ueberfaellig" onclick="setReTab(this)">Überfällig <span class="tab-count" id="tab-cnt-ueberfaellig">0</span></button>
+        <button class="tab" data-status="storniert" onclick="setReTab(this)">Storniert <span class="tab-count" id="tab-cnt-storniert">0</span></button>
+      </div>
       <div class="search-bar">
-        <input class="search-input" placeholder="Suche nach Nummer, Kunde …" oninput="renderRechnungen(this.value)">
-        <select class="form-select" id="re-filter-status" onchange="renderRechnungen()" style="width:160px">
-          <option value="">Alle Status</option>
-          <option value="offen">Offen</option>
-          <option value="bezahlt">Bezahlt</option>
-          <option value="ueberfaellig">Überfällig</option>
-          <option value="storniert">Storniert</option>
+        <input class="search-input" placeholder="Suche nach Nummer, Kunde, Betreff …" oninput="renderRechnungen(this.value)">
+        <select class="form-select" id="re-sort" onchange="renderRechnungen()" style="width:180px">
+          <option value="datum-desc">Neueste zuerst</option>
+          <option value="datum-asc">Älteste zuerst</option>
+          <option value="betrag-desc">Höchster Betrag</option>
+          <option value="betrag-asc">Niedrigster Betrag</option>
+          <option value="kunde">Nach Kunde A-Z</option>
         </select>
       </div>
+      <input type="hidden" id="re-filter-status" value="">
       <div class="card">
         <div class="table-wrap">
           <table>
@@ -815,16 +971,17 @@ tbody tr:hover { background: var(--surface2); }
         <div><div class="page-title">Kunden</div><div class="page-sub">Kundenstamm verwalten</div></div>
         <button class="btn btn-primary" onclick="openKuModal()">＋ Neuer Kunde</button>
       </div>
-      <div class="search-bar"><input class="search-input" placeholder="Suche nach Name, Ort …" oninput="renderKunden(this.value)"></div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Name</th><th class="hide-mobile">Firma</th><th class="hide-mobile">E-Mail</th><th class="hide-mobile">Ort</th><th>Rechnungen</th><th>Umsatz</th><th>Aktionen</th></tr></thead>
-            <tbody id="ku-tbody"></tbody>
-          </table>
-        </div>
-        <div class="empty" id="ku-empty" style="display:none"><div class="empty-icon">👤</div><div class="empty-title">Keine Kunden</div><div class="empty-sub">Füge deinen ersten Kunden hinzu</div></div>
+      <div class="search-bar">
+        <input class="search-input" placeholder="Suche nach Name, Firma, Ort …" oninput="renderKunden(this.value)">
+        <select class="form-select" id="ku-sort" onchange="renderKunden()" style="width:180px">
+          <option value="name">Name A-Z</option>
+          <option value="umsatz">Höchster Umsatz</option>
+          <option value="anzahl">Meiste Rechnungen</option>
+          <option value="neueste">Zuletzt hinzugefügt</option>
+        </select>
       </div>
+      <div class="ku-grid" id="ku-grid"></div>
+      <div class="empty" id="ku-empty" style="display:none"><div class="empty-icon">👤</div><div class="empty-title">Keine Kunden</div><div class="empty-sub">Füge deinen ersten Kunden hinzu</div></div>
     </div>
 
     <!-- ARTIKEL -->
@@ -885,19 +1042,19 @@ tbody tr:hover { background: var(--surface2); }
       <div class="stats-grid" id="prod-stats"></div>
       <div class="kanban" id="prod-board">
         <div class="kanban-col">
-          <div class="kanban-header" style="background:#e8eef8;color:#2a4070"><span>📥 Offen</span><span class="kanban-count" id="cnt-offen">0</span></div>
+          <div class="kanban-header" style="background:#ececeb;color:#3a3a3a"><span>📥 Offen</span><span class="kanban-count" id="cnt-offen">0</span></div>
           <div class="kanban-body" id="col-offen"></div>
         </div>
         <div class="kanban-col">
-          <div class="kanban-header" style="background:#fdf0e0;color:#8a5010"><span>🖨 In Druck</span><span class="kanban-count" id="cnt-druck">0</span></div>
+          <div class="kanban-header" style="background:#e0e0df;color:#2a2a2a"><span>🖨 In Druck</span><span class="kanban-count" id="cnt-druck">0</span></div>
           <div class="kanban-body" id="col-druck"></div>
         </div>
         <div class="kanban-col">
-          <div class="kanban-header" style="background:#e8f5ee;color:#2a5a3a"><span>✅ Fertig</span><span class="kanban-count" id="cnt-fertig">0</span></div>
+          <div class="kanban-header" style="background:#d4d4d3;color:#1a1a1a"><span>✅ Fertig</span><span class="kanban-count" id="cnt-fertig">0</span></div>
           <div class="kanban-body" id="col-fertig"></div>
         </div>
         <div class="kanban-col">
-          <div class="kanban-header" style="background:#f0e8f8;color:#6a2a8a"><span>🏁 Abgeschlossen</span><span class="kanban-count" id="cnt-abschluss">0</span></div>
+          <div class="kanban-header" style="background:#111111;color:#ffffff"><span>🏁 Abgeschlossen</span><span class="kanban-count" id="cnt-abschluss">0</span></div>
           <div class="kanban-body" id="col-abschluss"></div>
         </div>
       </div>
@@ -1320,6 +1477,21 @@ tbody tr:hover { background: var(--surface2); }
   </div>
 </div>
 
+
+<!-- MODAL: KUNDEN-DETAIL -->
+<div class="modal-bg" id="modal-kud">
+  <div class="modal-inner" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">Kundendetails</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-kud');openKuModal(document.getElementById('kud-content').dataset.kid)" id="kud-edit-btn" style="display:none">✏️ Bearbeiten</button>
+        <button class="modal-close" onclick="closeModal('modal-kud')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="kud-content"></div>
+  </div>
+</div>
+
 <!-- MODAL: VORSCHAU -->
 <div class="modal-bg" id="modal-vorschau">
   <div class="modal-inner" style="max-width:700px">
@@ -1434,7 +1606,7 @@ async function saveConfig() {
 
 // ══ NAVIGATION ═══════════════════════════════════════
 const PAGE_TITLES = {
-  dashboard:'Dashboard', rechnungen:'Rechnungen', ausgaben:'Ausgaben', kalkulator:'Gewinnkalkulator',
+  dashboard:'Dashboard', statistik:'Statistik', rechnungen:'Rechnungen', ausgaben:'Ausgaben', kalkulator:'Gewinnkalkulator',
   kunden:'Kunden', artikel:'Artikel & Leistungen', lager:'Lager',
   produktion:'Produktion', einstellungen:'Einstellungen'
 };
@@ -1460,6 +1632,7 @@ function showPage(p) {
   if(p==='produktion')   renderProduktion();
   if(p==='einstellungen') loadCfgForm();
   if(p==='kalkulator') renderKalkulator();
+  if(p==='statistik') renderStatistik();
 }
 
 function toggleSidebar() {
@@ -1546,6 +1719,10 @@ function applyLogo() {
 
 // ══ DASHBOARD ════════════════════════════════════════
 function renderDash() {
+  const h = new Date().getHours();
+  const greet = h < 11 ? 'Guten Morgen' : h < 17 ? 'Guten Tag' : 'Guten Abend';
+  const gEl = document.getElementById('dash-greeting');
+  if(gEl) gEl.textContent = greet + ' 👋';
   const re = DB.rechnungen;
   const aus = DB.ausgaben||[];
   const total = re.reduce((s,r)=>s+(r.brutto||0),0);
@@ -1571,6 +1748,29 @@ function renderDash() {
       <div class="stat-card-icon">${gewinn>=0?'📈':'📉'}</div><div class="stat-card-label">Gewinn</div>
       <div class="stat-card-value" style="color:${gewinn>=0?'var(--green)':'var(--red)'}">${fmt(gewinn)} €</div><div class="stat-card-meta">Einnahmen − Ausgaben</div><div class="stat-card-deco">◈</div>
     </div>`;
+
+  // Offene Rechnungen Warnung
+  const offeneRe = re.filter(r=>r.status==='offen'||r.status==='ueberfaellig');
+  const warnEl = document.getElementById('dash-warn');
+  if(warnEl) {
+    if(offeneRe.length > 0) {
+      const offenSum = offeneRe.reduce((s,r)=>s+(r.brutto||0),0);
+      warnEl.style.display = '';
+      warnEl.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:20px">⏳</span>
+            <div>
+              <div style="font-weight:600;font-size:14px;color:var(--ink)">${offeneRe.length} offene Rechnung${offeneRe.length>1?'en':''}</div>
+              <div style="font-size:12px;color:var(--ink3)">Insgesamt ${fmt(offenSum)} € ausstehend</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="showPage('rechnungen')">Ansehen →</button>
+        </div>`;
+    } else {
+      warnEl.style.display = 'none';
+    }
+  }
 
   // Kanal chart
   const kanalMap = {};
@@ -1677,14 +1877,38 @@ function renderDash() {
 }
 
 // ══ RECHNUNGEN ════════════════════════════════════════
+function setReTab(el) {
+  document.querySelectorAll('#re-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('re-filter-status').value = el.dataset.status;
+  renderRechnungen();
+}
+
 function renderRechnungen(q='') {
   const status = document.getElementById('re-filter-status')?.value||'';
   const sq = q || document.querySelector('#page-rechnungen .search-input')?.value||'';
-  let list = [...DB.rechnungen].sort((a,b)=>b.datum>a.datum?1:-1).filter(r => {
+  const sort = document.getElementById('re-sort')?.value||'datum-desc';
+
+  // Update tab counts
+  const cnt = { alle: DB.rechnungen.length, offen:0, bezahlt:0, ueberfaellig:0, storniert:0 };
+  DB.rechnungen.forEach(r => { if(cnt[r.status]!==undefined) cnt[r.status]++; });
+  Object.entries(cnt).forEach(([k,v]) => {
+    const el = document.getElementById('tab-cnt-'+k);
+    if(el) el.textContent = v;
+  });
+
+  let list = [...DB.rechnungen].filter(r => {
     const ms = !status || r.status===status;
     const mq = !sq || (r.nr+r.kundeName+(r.betreff||'')).toLowerCase().includes(sq.toLowerCase());
     return ms && mq;
   });
+
+  // Sorting
+  if(sort==='datum-desc') list.sort((a,b)=>b.datum>a.datum?1:-1);
+  else if(sort==='datum-asc') list.sort((a,b)=>a.datum>b.datum?1:-1);
+  else if(sort==='betrag-desc') list.sort((a,b)=>(b.brutto||0)-(a.brutto||0));
+  else if(sort==='betrag-asc') list.sort((a,b)=>(a.brutto||0)-(b.brutto||0));
+  else if(sort==='kunde') list.sort((a,b)=>(a.kundeName||'').localeCompare(b.kundeName||''));
   const tb = document.getElementById('re-tbody');
   const em = document.getElementById('re-empty');
   em.style.display = list.length ? 'none' : '';
@@ -2140,6 +2364,161 @@ function renderKalkulator() {
   calcKalk();
 }
 
+
+// ══ STATISTIK ════════════════════════════════════════
+function renderStatistik() {
+  const re = DB.rechnungen.filter(r=>r.status!=='storniert');
+  const aus = DB.ausgaben||[];
+
+  // Populate month selector
+  const monate = [...new Set(re.map(r=>r.datum?.slice(0,7)).filter(Boolean))].sort().reverse();
+  const sel = document.getElementById('stat-monat');
+  const cur = sel.value || monate[0] || new Date().toISOString().slice(0,7);
+  sel.innerHTML = monate.map(m=>`<option value="${m}" ${m===cur?'selected':''}>${fmtMonat(m)}</option>`).join('') || `<option value="${cur}">${fmtMonat(cur)}</option>`;
+
+  // ── PROGNOSE ──
+  // Basis: Durchschnitt der letzten 3 Monate + Trend
+  const monthData = {};
+  re.forEach(r => {
+    if(!r.datum) return;
+    const m = r.datum.slice(0,7);
+    if(!monthData[m]) monthData[m] = {umsatz:0, count:0, artikel:0};
+    monthData[m].umsatz += r.brutto||0;
+    monthData[m].count++;
+    (r.positionen||[]).forEach(p => { if(!/versand/i.test(p.beschr||'')) monthData[m].artikel += parseFloat(p.menge)||0; });
+  });
+  const ausData = {};
+  aus.forEach(a => {
+    if(!a.datum) return;
+    const m = a.datum.slice(0,7);
+    ausData[m] = (ausData[m]||0) + (parseFloat(a.betrag)||0);
+  });
+
+  const sortedM = Object.keys(monthData).sort();
+  const last3 = sortedM.slice(-3);
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const currentMonthData = monthData[thisMonth] || {umsatz:0, count:0};
+
+  let prognoseHtml = '';
+  if(last3.length >= 2) {
+    // Average of last complete months (exclude current month for avg)
+    const completeMonths = sortedM.filter(m => m < thisMonth).slice(-3);
+    if(completeMonths.length >= 1) {
+      const avg = completeMonths.reduce((s,m)=>s+monthData[m].umsatz,0) / completeMonths.length;
+      // Trend: compare last complete month vs the one before
+      let trend = 0;
+      if(completeMonths.length >= 2) {
+        const lastM = monthData[completeMonths[completeMonths.length-1]].umsatz;
+        const prevM = monthData[completeMonths[completeMonths.length-2]].umsatz;
+        trend = prevM > 0 ? (lastM - prevM) / prevM : 0;
+        trend = Math.max(-0.5, Math.min(0.5, trend)); // Cap at ±50%
+      }
+      const prognose = avg * (1 + trend * 0.5);
+      const avgCount = completeMonths.reduce((s,m)=>s+monthData[m].count,0) / completeMonths.length;
+
+      // Progress of current month
+      const dayOfMonth = new Date().getDate();
+      const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+      const monthProgress = dayOfMonth / daysInMonth;
+      const hochrechnung = monthProgress > 0.1 ? currentMonthData.umsatz / monthProgress : 0;
+
+      prognoseHtml = `
+        <div class="card-header"><div><div class="card-title">🔮 Prognose für ${fmtMonat(thisMonth)}</div><div class="card-sub">Basierend auf den letzten ${completeMonths.length} Monaten</div></div></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" class="stat-prog-grid">
+            <div style="background:var(--bg2);border-radius:8px;padding:16px;text-align:center">
+              <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Aktueller Stand</div>
+              <div style="font-size:24px;font-weight:700;color:var(--ink)">${fmt(currentMonthData.umsatz)} €</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:4px">${currentMonthData.count} Verkäufe · Tag ${dayOfMonth}/${daysInMonth}</div>
+            </div>
+            <div style="background:var(--ink);border-radius:8px;padding:16px;text-align:center">
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Hochrechnung Monatsende</div>
+              <div style="font-size:24px;font-weight:700;color:#fff">${fmt(hochrechnung)} €</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px">Bei gleichem Tempo</div>
+            </div>
+            <div style="background:var(--bg2);border-radius:8px;padding:16px;text-align:center">
+              <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Erwartung (Ø + Trend)</div>
+              <div style="font-size:24px;font-weight:700;color:var(--ink)">${fmt(prognose)} €</div>
+              <div style="font-size:11px;color:${trend>=0?'var(--green)':'var(--red)'};margin-top:4px">${trend>=0?'▲':'▼'} Trend ${Math.abs(trend*100).toFixed(0)}% · Ø ${avgCount.toFixed(1)} Verkäufe</div>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+  if(!prognoseHtml) {
+    prognoseHtml = `
+      <div class="card-header"><div><div class="card-title">🔮 Prognose</div></div></div>
+      <div class="card-body"><div style="color:var(--ink3);font-size:13px">Noch nicht genug Daten. Nach 2-3 Monaten mit Verkäufen erscheint hier deine Umsatzprognose.</div></div>`;
+  }
+  document.getElementById('stat-prognose').innerHTML = prognoseHtml;
+
+  // ── PRODUKTE IM GEWÄHLTEN MONAT ──
+  const monthRe = re.filter(r=>r.datum?.startsWith(cur));
+  const prodMonth = {};
+  monthRe.forEach(r => {
+    (r.positionen||[]).forEach(p => {
+      const name = (p.beschr||'').trim();
+      if(!name || /versand/i.test(name)) return;
+      if(!prodMonth[name]) prodMonth[name] = {menge:0, umsatz:0};
+      prodMonth[name].menge += parseFloat(p.menge)||0;
+      prodMonth[name].umsatz += (parseFloat(p.menge)||0)*(parseFloat(p.preis)||0);
+    });
+  });
+  const prodMonthList = Object.entries(prodMonth).sort((a,b)=>b[1].menge-a[1].menge);
+  const maxMenge = Math.max(...prodMonthList.map(([,v])=>v.menge), 1);
+  document.getElementById('stat-produkte-sub').textContent = fmtMonat(cur);
+  document.getElementById('stat-produkte').innerHTML = prodMonthList.length ? prodMonthList.map(([name,v])=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+        <span style="font-weight:600;color:var(--ink)">${name}</span>
+        <span style="color:var(--ink3)">${v.menge}× · ${fmt(v.umsatz)} €</span>
+      </div>
+      <div style="background:var(--bg2);border-radius:4px;height:8px;overflow:hidden">
+        <div style="background:var(--ink);width:${Math.round(v.menge/maxMenge*100)}%;height:100%;border-radius:4px;transition:width 0.5s"></div>
+      </div>
+    </div>`).join('') : '<div style="color:var(--ink3);font-size:13px">Keine Verkäufe in diesem Monat</div>';
+
+  // ── TOP PRODUKTE GESAMT ──
+  const prodAll = {};
+  re.forEach(r => {
+    (r.positionen||[]).forEach(p => {
+      const name = (p.beschr||'').trim();
+      if(!name || /versand/i.test(name)) return;
+      if(!prodAll[name]) prodAll[name] = {menge:0, umsatz:0};
+      prodAll[name].menge += parseFloat(p.menge)||0;
+      prodAll[name].umsatz += (parseFloat(p.menge)||0)*(parseFloat(p.preis)||0);
+    });
+  });
+  const topList = Object.entries(prodAll).sort((a,b)=>b[1].umsatz-a[1].umsatz).slice(0,8);
+  document.getElementById('stat-top').innerHTML = topList.length ? topList.map(([name,v],i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:26px;height:26px;background:${i===0?'var(--ink)':'var(--bg2)'};color:${i===0?'#fff':'var(--ink3)'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</div>
+        <div style="font-size:11px;color:var(--ink3)">${v.menge}× verkauft</div>
+      </div>
+      <div style="font-weight:700;color:var(--ink);font-size:13px;flex-shrink:0">${fmt(v.umsatz)} €</div>
+    </div>`).join('') : '<div style="color:var(--ink3);font-size:13px">Noch keine Verkäufe</div>';
+
+  // ── MONATSVERGLEICH TABELLE ──
+  const allMonths = [...new Set([...Object.keys(monthData), ...Object.keys(ausData)])].sort().reverse();
+  document.getElementById('stat-monate-tbody').innerHTML = allMonths.map(m => {
+    const d = monthData[m] || {umsatz:0, count:0, artikel:0};
+    const a = ausData[m] || 0;
+    const gewinn = d.umsatz - a;
+    const avg = d.count > 0 ? d.umsatz / d.count : 0;
+    return `<tr>
+      <td style="font-weight:600;white-space:nowrap">${fmtMonat(m)}</td>
+      <td>${d.count}</td>
+      <td>${d.artikel}</td>
+      <td style="font-weight:700;color:var(--ink)">${fmt(d.umsatz)} €</td>
+      <td style="color:var(--red)">${a>0?'− '+fmt(a)+' €':'—'}</td>
+      <td style="font-weight:700;color:${gewinn>=0?'var(--green)':'var(--red)'}">${fmt(gewinn)} €</td>
+      <td style="color:var(--ink3)">${fmt(avg)} €</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Noch keine Daten</td></tr>';
+}
+
 // ══ AUSGABEN ═════════════════════════════════════════
 const AUS_KATS = ['Büromaterial','Software & Lizenzen','Marketing','Fahrtkosten','Telefon & Internet','Waren & Material','Versicherungen','Weiterbildung','Steuerberater','Sonstiges'];
 
@@ -2225,23 +2604,95 @@ async function delAus(id){
 // ══ KUNDEN ═══════════════════════════════════════════
 function renderKunden(q='') {
   const sq=q||document.querySelector('#page-kunden .search-input')?.value||'';
-  const list=DB.kunden.filter(k=>!sq||(k.name+k.firma+k.ort).toLowerCase().includes(sq.toLowerCase()));
-  const tb=document.getElementById('ku-tbody');
-  document.getElementById('ku-empty').style.display=list.length?'none':'';
-  tb.innerHTML=list.map(k=>{
-    const n=DB.rechnungen.filter(r=>r.kundeId===k.id).length;
-    const u=DB.rechnungen.filter(r=>r.kundeId===k.id).reduce((s,r)=>s+(r.brutto||0),0);
-    return `<tr>
-      <td style="font-weight:600">${k.name}</td>
-      <td>${k.firma||'—'}</td><td>${k.email||'—'}</td><td>${k.ort||'—'}</td>
-      <td><span class="badge badge-blue">${n}</span></td>
-      <td style="font-weight:700;color:var(--accent)">${fmt(u)} €</td>
-      <td><div style="display:flex;gap:4px">
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="openKuModal('${k.id}')">✏️</button>
-        <button class="btn-danger" onclick="delKu('${k.id}')">✕</button>
-      </div></td>
-    </tr>`;
+  const sort=document.getElementById('ku-sort')?.value||'name';
+  let list=DB.kunden.filter(k=>!sq||((k.name||'')+(k.firma||'')+(k.ort||'')).toLowerCase().includes(sq.toLowerCase()));
+
+  // Enrich with stats
+  const enriched = list.map(k => {
+    const invoices = DB.rechnungen.filter(r=>r.kundeId===k.id);
+    return { ...k, _count: invoices.length, _umsatz: invoices.reduce((s,r)=>s+(r.brutto||0),0) };
+  });
+
+  if(sort==='name') enriched.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else if(sort==='umsatz') enriched.sort((a,b)=>b._umsatz-a._umsatz);
+  else if(sort==='anzahl') enriched.sort((a,b)=>b._count-a._count);
+  else if(sort==='neueste') enriched.reverse();
+
+  const grid=document.getElementById('ku-grid');
+  document.getElementById('ku-empty').style.display=enriched.length?'none':'';
+  grid.innerHTML=enriched.map(k=>{
+    const initials=(k.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="ku-card" onclick="openKuDetail('${k.id}')">
+      <div class="ku-card-actions">
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();openKuModal('${k.id}')">✏️</button>
+        <button class="btn-danger" onclick="event.stopPropagation();delKu('${k.id}')">✕</button>
+      </div>
+      <div class="ku-avatar">${initials}</div>
+      <div class="ku-card-name">${k.name||'—'}</div>
+      <div class="ku-card-firma">${k.firma||'&nbsp;'}</div>
+      <div class="ku-card-meta">
+        ${k.email?`<span>✉ ${k.email}</span>`:''}
+        ${k.ort?`<span>📍 ${k.plz||''} ${k.ort}</span>`:''}
+      </div>
+      <div class="ku-card-stats">
+        <div class="ku-stat"><div class="ku-stat-val">${k._count}</div><div class="ku-stat-label">Rechnungen</div></div>
+        <div class="ku-stat"><div class="ku-stat-val">${fmt(k._umsatz)} €</div><div class="ku-stat-label">Umsatz</div></div>
+      </div>
+    </div>`;
   }).join('');
+}
+
+function openKuDetail(id) {
+  const k = DB.kunden.find(x=>x.id===id);
+  if(!k) return;
+  const invoices = DB.rechnungen.filter(r=>r.kundeId===id).sort((a,b)=>b.datum>a.datum?1:-1);
+  const umsatz = invoices.reduce((s,r)=>s+(r.brutto||0),0);
+  const offen = invoices.filter(r=>r.status==='offen').reduce((s,r)=>s+(r.brutto||0),0);
+  const initials=(k.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+  document.getElementById('kud-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div class="ku-avatar" style="width:56px;height:56px;font-size:20px;margin:0">${initials}</div>
+      <div>
+        <div style="font-size:19px;font-weight:700;color:var(--ink)">${k.name||'—'}</div>
+        ${k.firma?`<div style="font-size:13px;color:var(--ink3)">${k.firma}</div>`:''}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:var(--bg2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:var(--ink)">${invoices.length}</div>
+        <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px">Rechnungen</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:var(--ink)">${fmt(umsatz)} €</div>
+        <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px">Umsatz</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:${offen>0?'var(--red)':'var(--ink)'}">${fmt(offen)} €</div>
+        <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px">Offen</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:20px;font-size:13px;line-height:1.9;color:var(--ink2)">
+      ${k.str?`<div>📍 ${k.str}, ${k.plz||''} ${k.ort||''}</div>`:''}
+      ${k.email?`<div>✉ <a href="mailto:${k.email}" style="color:var(--ink)">${k.email}</a></div>`:''}
+      ${k.tel?`<div>📞 <a href="tel:${k.tel}" style="color:var(--ink)">${k.tel}</a></div>`:''}
+      ${k.notiz?`<div style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border);font-style:italic;color:var(--ink3)">${k.notiz}</div>`:''}
+      ${!k.str&&!k.email&&!k.tel&&!k.notiz?'<div style="color:var(--ink3)">Keine Kontaktdaten hinterlegt</div>':''}
+    </div>
+    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--ink3);margin-bottom:10px">Rechnungshistorie</div>
+    ${invoices.length ? invoices.map(r=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">${r.nr}</div>
+          <div style="font-size:11px;color:var(--ink3)">${fmtDate(r.datum)}${r.betreff?' · '+r.betreff:''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-weight:700;color:var(--ink)">${fmt(r.brutto||0)} €</span>
+          ${statusBadge(r.status)}
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('modal-kud');openReModal('${r.id}')" title="Öffnen">→</button>
+        </div>
+      </div>`).join('') : '<div style="color:var(--ink3);font-size:13px;padding:12px 0">Noch keine Rechnungen</div>'}`;
+  openModal('modal-kud');
 }
 
 function openKuModal(id=null) {
