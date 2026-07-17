@@ -416,6 +416,47 @@ tbody tr:hover { background: var(--surface2); }
 .ku-card:hover .ku-card-actions { opacity: 1; }
 @media (hover: none) { .ku-card-actions { opacity: 1; } }
 
+
+/* ── GLOBAL SEARCH ── */
+.global-search-wrap { display: none; }
+@media (min-width: 700px) { .global-search-wrap { display: block; } }
+#global-search-results {
+  display: none;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  margin-top: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow3);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 200;
+}
+#global-search-results.open { display: block; }
+.gs-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink3);
+  padding: 10px 14px 4px;
+}
+.gs-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.gs-item:hover { background: var(--bg2); }
+.gs-item-icon { font-size: 15px; flex-shrink: 0; }
+.gs-item-text { flex: 1; min-width: 0; }
+.gs-item-title { font-size: 13px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gs-item-sub { font-size: 11px; color: var(--ink3); }
+.gs-empty { padding: 20px; text-align: center; font-size: 13px; color: var(--ink3); }
+
 /* ── TABS ── */
 .tab-bar {
   display: flex;
@@ -848,9 +889,14 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
 <!-- MAIN -->
 <div id="main">
   <div class="topbar">
-    <div style="display:flex;align-items:center;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
       <button id="hamburger" onclick="toggleSidebar()">☰</button>
       <div class="topbar-title" id="topbar-title">Dashboard</div>
+    </div>
+    <div style="position:relative;flex:1;max-width:340px;margin:0 16px" class="global-search-wrap">
+      <input id="global-search" class="search-input" placeholder="Suche Kunden, Rechnungen, Artikel …" style="width:100%;padding-left:32px" oninput="globalSearch(this.value)" onfocus="globalSearch(this.value)">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3);font-size:13px;pointer-events:none">🔍</span>
+      <div id="global-search-results"></div>
     </div>
     <div class="topbar-right">
       <div id="sync-indicator"><div class="sync-dot" id="sync-dot"></div><span id="sync-text"></span></div>
@@ -866,7 +912,7 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
         <div><div class="page-title" id="dash-greeting">Willkommen 👋</div><div class="page-sub">Dein Business auf einen Blick</div></div>
       </div>
       <div class="stats-grid" id="dash-stats"></div>
-      <div class="card" id="dash-warn" style="display:none;padding:14px 18px;margin-bottom:20px;border-left:3px solid var(--ink)"></div>
+      <div class="card" id="dash-tasks" style="margin-bottom:20px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" id="dash-charts"></div>
     </div>
 
@@ -1717,6 +1763,51 @@ function updateRabattcodePreview() {
   if(pt) pt.textContent = text;
 }
 
+
+// ══ GLOBALE SUCHE ═════════════════════════════════════
+function globalSearch(q) {
+  const box = document.getElementById('global-search-results');
+  q = (q||'').trim().toLowerCase();
+  if(q.length < 1) { box.classList.remove('open'); box.innerHTML=''; return; }
+
+  const kunden = DB.kunden.filter(k=>((k.name||'')+(k.firma||'')).toLowerCase().includes(q)).slice(0,4);
+  const rechnungen = DB.rechnungen.filter(r=>((r.nr||'')+(r.kundeName||'')+(r.betreff||'')).toLowerCase().includes(q)).slice(0,4);
+  const artikel = DB.artikel.filter(a=>(a.name||'').toLowerCase().includes(q)).slice(0,4);
+
+  let html = '';
+  if(kunden.length) {
+    html += '<div class="gs-group-label">Kunden</div>';
+    html += kunden.map(k=>`<div class="gs-item" onclick="gsGoto('kunde','${k.id}')"><span class="gs-item-icon">👤</span><div class="gs-item-text"><div class="gs-item-title">${k.name||'—'}</div><div class="gs-item-sub">${k.firma||k.ort||''}</div></div></div>`).join('');
+  }
+  if(rechnungen.length) {
+    html += '<div class="gs-group-label">Rechnungen</div>';
+    html += rechnungen.map(r=>`<div class="gs-item" onclick="gsGoto('rechnung','${r.id}')"><span class="gs-item-icon">🧾</span><div class="gs-item-text"><div class="gs-item-title">${r.nr} · ${r.kundeName||'—'}</div><div class="gs-item-sub">${fmt(r.brutto||0)} € · ${r.status}</div></div></div>`).join('');
+  }
+  if(artikel.length) {
+    html += '<div class="gs-group-label">Artikel</div>';
+    html += artikel.map(a=>`<div class="gs-item" onclick="gsGoto('artikel','${a.id}')"><span class="gs-item-icon">◇</span><div class="gs-item-text"><div class="gs-item-title">${a.name}</div><div class="gs-item-sub">${fmt(parseFloat(a.preis)||0)} €</div></div></div>`).join('');
+  }
+  if(!html) html = '<div class="gs-empty">Keine Ergebnisse gefunden</div>';
+
+  box.innerHTML = html;
+  box.classList.add('open');
+}
+
+function gsGoto(type, id) {
+  document.getElementById('global-search-results').classList.remove('open');
+  document.getElementById('global-search').value = '';
+  if(type==='kunde') { showPage('kunden'); setTimeout(()=>openKuDetail(id), 100); }
+  if(type==='rechnung') { showPage('rechnungen'); setTimeout(()=>openReModal(id), 100); }
+  if(type==='artikel') { showPage('artikel'); setTimeout(()=>openArModal(id), 100); }
+}
+
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.global-search-wrap');
+  if(wrap && !wrap.contains(e.target)) {
+    document.getElementById('global-search-results')?.classList.remove('open');
+  }
+});
+
 // ══ DARK MODE ════════════════════════════════════════
 function toggleDark() {
   DB.config.darkmode = !DB.config.darkmode;
@@ -1792,26 +1883,69 @@ function renderDash() {
       <div class="stat-card-value" style="color:${gewinn>=0?'var(--green)':'var(--red)'}">${fmt(gewinn)} €</div><div class="stat-card-meta">Einnahmen − Ausgaben</div><div class="stat-card-deco">◈</div>
     </div>`;
 
-  // Offene Rechnungen Warnung
-  const offeneRe = re.filter(r=>r.status==='offen'||r.status==='ueberfaellig');
-  const warnEl = document.getElementById('dash-warn');
-  if(warnEl) {
+  // ── HEUTE: Aufgabenliste ──
+  const tasksEl = document.getElementById('dash-tasks');
+  if(tasksEl) {
+    const tasks = [];
+
+    // Offene Rechnungen (nur relevant falls Zahlungsziel genutzt wird, nicht bei reiner Vorkasse)
+    const offeneRe = re.filter(r=>r.status==='offen');
     if(offeneRe.length > 0) {
       const offenSum = offeneRe.reduce((s,r)=>s+(r.brutto||0),0);
-      warnEl.style.display = '';
-      warnEl.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-          <div style="display:flex;align-items:center;gap:12px">
-            <span style="font-size:20px">⏳</span>
-            <div>
-              <div style="font-weight:600;font-size:14px;color:var(--ink)">${offeneRe.length} offene Rechnung${offeneRe.length>1?'en':''}</div>
-              <div style="font-size:12px;color:var(--ink3)">Insgesamt ${fmt(offenSum)} € ausstehend</div>
-            </div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="showPage('rechnungen')">Ansehen →</button>
-        </div>`;
+      tasks.push({
+        icon: '⏳', title: `${offeneRe.length} offene Rechnung${offeneRe.length>1?'en':''}`,
+        sub: `Insgesamt ${fmt(offenSum)} € ausstehend`, action: "showPage('rechnungen')"
+      });
+    }
+
+    // Produktion: Aufträge in Druck
+    const inDruck = re.filter(r=>r.prodStatus==='druck').length;
+    if(inDruck > 0) {
+      tasks.push({
+        icon: '🖨', title: `${inDruck} Auftrag${inDruck>1?'e':''} in Produktion`,
+        sub: 'Aktuell im Druck', action: "showPage('produktion')"
+      });
+    }
+
+    // Produktion: fertig, wartet auf Versand
+    const fertigWartend = re.filter(r=>r.prodStatus==='fertig').length;
+    if(fertigWartend > 0) {
+      tasks.push({
+        icon: '📦', title: `${fertigWartend} Auftrag${fertigWartend>1?'e':''} versandbereit`,
+        sub: 'Fertig gedruckt, wartet auf Versand/Abholung', action: "showPage('produktion')"
+      });
+    }
+
+    // Lager: unter Mindestbestand
+    const lager = DB.lager||[];
+    const niedrig = lager.filter(l=>(parseFloat(l.bestand)||0)<=(parseFloat(l.mindest)||0));
+    if(niedrig.length > 0) {
+      tasks.push({
+        icon: '⚠️', title: `${niedrig.length} Artikel im Lager niedrig`,
+        sub: niedrig.slice(0,3).map(l=>l.name).join(', '), action: "showPage('lager')"
+      });
+    }
+
+    if(tasks.length === 0) {
+      tasksEl.innerHTML = `
+        <div class="card-header"><div><div class="card-title">✅ Heute</div></div></div>
+        <div class="card-body" style="text-align:center;padding:24px;color:var(--ink3);font-size:13px">Alles erledigt — keine offenen Aufgaben 🎉</div>`;
     } else {
-      warnEl.style.display = 'none';
+      tasksEl.innerHTML = `
+        <div class="card-header"><div><div class="card-title">📋 Heute zu erledigen</div><div class="card-sub">${tasks.length} offene Punkt${tasks.length>1?'e':''}</div></div></div>
+        <div style="padding:6px 0">
+          ${tasks.map(t=>`
+            <div onclick="${t.action}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+              <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                <span style="font-size:18px;flex-shrink:0">${t.icon}</span>
+                <div style="min-width:0">
+                  <div style="font-weight:600;font-size:13px;color:var(--ink)">${t.title}</div>
+                  <div style="font-size:11px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.sub}</div>
+                </div>
+              </div>
+              <span style="color:var(--ink3);flex-shrink:0">→</span>
+            </div>`).join('')}
+        </div>`;
     }
   }
 
@@ -1997,9 +2131,7 @@ function openReModal(id=null) {
     (r.positionen||[]).forEach(p => addPos(p.beschr, p.menge, p.preis, p.keinRabatt));
   } else {
     document.getElementById('re-modal-title').textContent = 'Neue Rechnung';
-    const cfg = DB.config;
-    const nr = (cfg.prefix||'RE-') + String(cfg.nextnr||1).padStart(4,'0');
-    document.getElementById('re-nr').value = nr;
+    document.getElementById('re-nr').value = buildRechnungsnummer();
     document.getElementById('re-datum').valueAsDate = new Date();
     document.getElementById('re-lieferdatum').value = '';
     document.getElementById('re-betreff').value = '';
@@ -2123,11 +2255,38 @@ async function saveRe() {
   const rec = buildReObj();
   rec.id = cId||rec.id;
   if(cId) { const i=DB.rechnungen.findIndex(x=>x.id===cId); if(i>=0) DB.rechnungen[i]=rec; else DB.rechnungen.push(rec); }
-  else { DB.rechnungen.push(rec); DB.config.nextnr=(DB.config.nextnr||1)+1; }
+  else { DB.rechnungen.push(rec); advanceNextNr(); }
   closeModal('modal-re');
   renderRechnungen();
   await sbSave('rechnungen', rec);
   await sbFetch('config','POST',{id:'main',data:DB.config,updated_at:new Date().toISOString()}).catch(()=>{});
+}
+
+// ══ JAHRESWECHSEL-AUTOMATIK ══════════════════════════
+function advanceNextNr() {
+  const curYear = new Date().getFullYear();
+  if(DB.config.nextnrYear && DB.config.nextnrYear !== curYear) {
+    // Jahr hat gewechselt -> Zähler zurücksetzen
+    DB.config.nextnr = 2;
+    DB.config.nextnrYear = curYear;
+  } else {
+    DB.config.nextnr = (DB.config.nextnr||1) + 1;
+    DB.config.nextnrYear = curYear;
+  }
+}
+
+function buildRechnungsnummer() {
+  const cfg = DB.config;
+  const curYear = new Date().getFullYear();
+  let nr = cfg.nextnr || 1;
+  // Falls das gespeicherte Jahr nicht mit aktuellem übereinstimmt -> Reset auf 1
+  if(cfg.nextnrYear && cfg.nextnrYear !== curYear) nr = 1;
+  const prefix = cfg.prefix || 'RE-';
+  // Prüfen ob Präfix bereits {JAHR} enthält
+  if(prefix.includes('{JAHR}')) {
+    return prefix.replace('{JAHR}', curYear) + String(nr).padStart(4,'0');
+  }
+  return prefix + curYear + String(nr).padStart(4,'0');
 }
 
 async function speichernUndDrucken() {
@@ -2135,7 +2294,7 @@ async function speichernUndDrucken() {
   const rec = buildReObj();
   rec.id = cId||rec.id;
   if(cId) { const i=DB.rechnungen.findIndex(x=>x.id===cId); if(i>=0) DB.rechnungen[i]=rec; else DB.rechnungen.push(rec); }
-  else { DB.rechnungen.push(rec); DB.config.nextnr=(DB.config.nextnr||1)+1; }
+  else { DB.rechnungen.push(rec); advanceNextNr(); }
   closeModal('modal-re');
   renderRechnungen();
   await sbSave('rechnungen', rec);
