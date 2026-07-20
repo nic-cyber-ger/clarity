@@ -2138,7 +2138,7 @@ function openReModal(id=null) {
     document.getElementById('re-rabatt').value = '';
     document.getElementById('re-rabatt-text').value = '';
     document.getElementById('re-kanal').value = '';
-    document.getElementById('re-zahlart').value = cfg.zahlart||'vorkasse';
+    document.getElementById('re-zahlart').value = DB.config.zahlart||'vorkasse';
     document.getElementById('re-status').value = 'offen';
     document.getElementById('re-notiz').value = '';
     addPos();
