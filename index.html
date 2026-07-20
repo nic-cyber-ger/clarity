@@ -417,6 +417,35 @@ tbody tr:hover { background: var(--surface2); }
 @media (hover: none) { .ku-card-actions { opacity: 1; } }
 
 
+
+/* ── BACKUP REMINDER ── */
+.backup-banner {
+  display: none;
+  position: fixed;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  z-index: 600;
+  max-width: 480px;
+  width: calc(100% - 32px);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.backup-banner.show { display: block; opacity: 1; transform: translateX(-50%) translateY(0); }
+.backup-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  flex-wrap: wrap;
+}
+@media (max-width: 500px) {
+  .backup-banner-inner { flex-direction: column; align-items: flex-start; }
+  .backup-banner-inner .btn { width: 100%; justify-content: center; }
+}
+
 /* ── GLOBAL SEARCH ── */
 .global-search-wrap { display: none; }
 @media (min-width: 700px) { .global-search-wrap { display: block; } }
@@ -847,6 +876,19 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
 </head>
 <body>
 
+<!-- BACKUP REMINDER -->
+<div id="backup-reminder" class="backup-banner">
+  <div class="backup-banner-inner">
+    <span style="font-size:18px">💾</span>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:13px;color:#fff">Backup erstellen?</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6)">Lade regelmäßig ein Backup herunter, falls die Cloud mal nicht erreichbar ist.</div>
+    </div>
+    <button class="btn btn-sm" style="background:#fff;color:#111" onclick="dismissBackupReminder(true)">⬇ Jetzt sichern</button>
+    <button class="btn btn-ghost btn-sm" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)" onclick="dismissBackupReminder(false)">Später</button>
+  </div>
+</div>
+
 <!-- SIDEBAR -->
 <div id="sidebar">
   <div class="sidebar-logo">
@@ -921,7 +963,10 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
     <div class="page" id="page-statistik">
       <div class="page-header">
         <div><div class="page-title">Statistik</div><div class="page-sub">Verkäufe, Produkte & Prognose</div></div>
-        <select class="form-select" id="stat-monat" onchange="renderStatistik()" style="width:180px"></select>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select class="form-select" id="stat-monat" onchange="renderStatistik()" style="width:180px"></select>
+          <button class="btn btn-ghost" onclick="exportEUR()">📄 EÜR-Export (Jahr)</button>
+        </div>
       </div>
 
       <!-- Prognose Card -->
@@ -1306,10 +1351,20 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
           </div>
         </div>
       </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><div><div class="card-title">💾 Datensicherung</div><div class="card-sub">Backup erstellen & wiederherstellen</div></div></div>
+        <div class="card-body">
+          <div id="local-backup-status" style="font-size:12px;color:var(--ink3);margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="exportData()">⬇ Backup als Datei speichern</button>
+            <label class="btn btn-ghost" style="cursor:pointer">⬆ Backup-Datei importieren<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+            <button class="btn btn-ghost" onclick="restoreFromLocal()">🔄 Lokales Backup wiederherstellen</button>
+          </div>
+          <p style="font-size:11px;color:var(--ink3);margin-top:12px;line-height:1.6">Clarity speichert automatisch ein lokales Backup in deinem Browser bei jedem Laden der Daten. Zusätzlich empfehlen wir alle 1-2 Wochen ein Backup als Datei herunterzuladen und sicher abzulegen (z.B. Google Drive).</p>
+        </div>
+      </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="saveConfig()">💾 Einstellungen speichern</button>
-        <button class="btn btn-ghost" onclick="exportData()">⬇ Backup exportieren</button>
-        <label class="btn btn-ghost" style="cursor:pointer">⬆ Backup importieren<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
       </div>
     </div>
 
@@ -1394,12 +1449,23 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
         </div>
       </div>
       <div class="form-row"><label class="form-label">Interne Notiz</label><textarea class="form-textarea" id="re-notiz" style="min-height:60px" placeholder="Nur für dich sichtbar …"></textarea></div>
+
+      <div id="re-lock-hint" style="display:none;background:var(--bg2);border-left:3px solid var(--ink);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:12px">
+        🔒 <strong>Diese Rechnung ist final ausgestellt</strong> und kann aus rechtlichen Gründen (§14 UStG) inhaltlich nicht mehr verändert werden. Nur Status und interne Notiz können angepasst werden. Für inhaltliche Korrekturen nutze „Stornieren & Korrigieren".
+      </div>
+
+      <div id="re-history-box" style="display:none">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink3);margin-bottom:8px">Änderungshistorie</div>
+        <div id="re-history-list" style="margin-bottom:8px"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-re')">Abbrechen</button>
+      <button class="btn btn-ghost" id="re-storno-btn" style="display:none;color:var(--red)" onclick="stornoMenu()">🗑 Stornieren …</button>
       <button class="btn btn-ghost" onclick="vorschau()">👁 Vorschau</button>
-      <button class="btn btn-gold" onclick="speichernUndDrucken()">🖨 & PDF</button>
-      <button class="btn btn-primary" onclick="saveRe()">Speichern</button>
+      <button class="btn btn-gold" id="re-pdf-btn" onclick="speichernUndDrucken()">🖨 & PDF</button>
+      <button class="btn btn-ghost" id="re-print-locked-btn" style="display:none" onclick="druckRe(editId)">🖨 Drucken</button>
+      <button class="btn btn-primary" id="re-save-btn" onclick="saveRe()">Speichern</button>
     </div>
   </div>
 </div>
@@ -1646,6 +1712,7 @@ async function loadDB() {
     DB.lagerBew   = bew.map(r=>r.data).filter(Boolean);
     if(cfg.length > 0 && cfg[0].data) DB.config = { ...DB.config, ...cfg[0].data };
     setSync('ok');
+    localBackupNow(true);
   } catch(e) {
     console.error('loadDB', e);
     setSync('error');
@@ -1807,6 +1874,71 @@ document.addEventListener('click', e => {
     document.getElementById('global-search-results')?.classList.remove('open');
   }
 });
+
+
+// ══ BACKUP SYSTEM ═════════════════════════════════════
+function localBackupNow(silent=false) {
+  try {
+    const backup = { data: DB, savedAt: new Date().toISOString(), version: 1 };
+    localStorage.setItem('clarity_backup', JSON.stringify(backup));
+    if(!silent) console.log('Backup gespeichert:', backup.savedAt);
+  } catch(e) { console.error('Backup fehlgeschlagen', e); }
+}
+
+function checkBackupReminder() {
+  const cfg = DB.config;
+  const last = cfg.lastBackupReminder;
+  const now = Date.now();
+  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  if(!last || (now - last) > WEEK) {
+    showBackupReminder();
+  }
+}
+
+function showBackupReminder() {
+  const el = document.getElementById('backup-reminder');
+  if(el) el.classList.add('show');
+}
+
+function dismissBackupReminder(doBackup) {
+  DB.config.lastBackupReminder = Date.now();
+  sbFetch('config','POST',{id:'main',data:DB.config,updated_at:new Date().toISOString()}).catch(()=>{});
+  document.getElementById('backup-reminder').classList.remove('show');
+  if(doBackup) exportData();
+}
+
+function restoreLocalBackup() {
+  try {
+    const raw = localStorage.getItem('clarity_backup');
+    if(!raw) { alert('Kein lokales Backup vorhanden.'); return null; }
+    const backup = JSON.parse(raw);
+    return backup;
+  } catch(e) { return null; }
+}
+
+
+function restoreFromLocal() {
+  const backup = restoreLocalBackup();
+  if(!backup) return;
+  const date = new Date(backup.savedAt).toLocaleString('de-DE');
+  if(!confirm(`Lokales Backup vom ${date} wiederherstellen?\n\nDeine aktuellen Cloud-Daten werden dabei NICHT automatisch überschrieben — du musst danach manuell speichern, wenn du sie übernehmen willst.`)) return;
+  Object.assign(DB, backup.data);
+  loadCfgForm();
+  renderDash();
+  alert('✅ Lokales Backup geladen. Gehe zu den einzelnen Seiten um zu prüfen, dann ggf. erneut speichern damit es in der Cloud landet.');
+}
+
+function updateLocalBackupStatus() {
+  const el = document.getElementById('local-backup-status');
+  if(!el) return;
+  try {
+    const raw = localStorage.getItem('clarity_backup');
+    if(!raw) { el.textContent = 'Noch kein lokales Backup vorhanden.'; return; }
+    const backup = JSON.parse(raw);
+    const date = new Date(backup.savedAt).toLocaleString('de-DE');
+    el.innerHTML = `✅ Letztes lokales Backup: <strong>${date}</strong>`;
+  } catch(e) { el.textContent = 'Kein lokales Backup verfügbar.'; }
+}
 
 // ══ DARK MODE ════════════════════════════════════════
 function toggleDark() {
@@ -2114,9 +2246,12 @@ function openReModal(id=null) {
   // Populate Kunden
   const sel = document.getElementById('re-kunde');
   sel.innerHTML = '<option value="">— Kunde wählen —</option>' + DB.kunden.map(k=>`<option value="${k.id}">${k.firma||k.name}</option>`).join('');
+
+  const isLocked = id && DB.rechnungen.find(x=>x.id===id)?.locked;
+
   if(id) {
     const r = DB.rechnungen.find(x=>x.id===id);
-    document.getElementById('re-modal-title').textContent = 'Rechnung bearbeiten';
+    document.getElementById('re-modal-title').textContent = isLocked ? `Rechnung ${r.nr}` : 'Rechnung bearbeiten';
     sel.value = r.kundeId||'';
     document.getElementById('re-nr').value = r.nr||'';
     document.getElementById('re-datum').value = r.datum||'';
@@ -2144,7 +2279,56 @@ function openReModal(id=null) {
     addPos();
   }
   calcSums();
+  applyReLockState(isLocked);
   openModal('modal-re');
+}
+
+function applyReLockState(locked) {
+  // Felder die bei einer bereits ausgestellten Rechnung NICHT mehr verändert werden dürfen (§14 UStG)
+  const lockFields = ['re-kunde','re-nr','re-datum','re-lieferdatum','re-betreff','re-rabatt','re-rabatt-text','re-kanal','re-zahlart'];
+  lockFields.forEach(id => { const el = document.getElementById(id); if(el) el.disabled = !!locked; });
+  document.querySelectorAll('#re-pos input').forEach(el => el.disabled = !!locked);
+  document.querySelectorAll('#re-pos button').forEach(el => el.style.display = locked ? 'none' : '');
+  const addPosBtn = document.querySelector('button[onclick="addPos()"]');
+  if(addPosBtn) addPosBtn.style.display = locked ? 'none' : '';
+
+  const hint = document.getElementById('re-lock-hint');
+  const saveBtn = document.getElementById('re-save-btn');
+  const pdfBtn = document.getElementById('re-pdf-btn');
+  const stornoBtn = document.getElementById('re-storno-btn');
+  const historyBox = document.getElementById('re-history-box');
+
+  if(locked) {
+    if(hint) hint.style.display = '';
+    if(saveBtn) saveBtn.style.display = 'none';
+    if(pdfBtn) pdfBtn.style.display = 'none';
+    if(stornoBtn) stornoBtn.style.display = '';
+    const printLockedBtn = document.getElementById('re-print-locked-btn');
+    if(printLockedBtn) printLockedBtn.style.display = '';
+    renderReHistory(editId);
+    if(historyBox) historyBox.style.display = '';
+  } else {
+    if(hint) hint.style.display = 'none';
+    if(saveBtn) saveBtn.style.display = '';
+    if(pdfBtn) pdfBtn.style.display = '';
+    if(stornoBtn) stornoBtn.style.display = 'none';
+    if(historyBox) historyBox.style.display = 'none';
+    const printLockedBtn2 = document.getElementById('re-print-locked-btn');
+    if(printLockedBtn2) printLockedBtn2.style.display = 'none';
+  }
+}
+
+function renderReHistory(id) {
+  const r = DB.rechnungen.find(x=>x.id===id);
+  const box = document.getElementById('re-history-list');
+  if(!box || !r) return;
+  const log = r.log || [];
+  if(!log.length) { box.innerHTML = '<div style="color:var(--ink3);font-size:12px">Keine Änderungen protokolliert</div>'; return; }
+  box.innerHTML = log.slice().reverse().map(e => `
+    <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid var(--border)">
+      <span style="color:var(--ink2)">${e.aktion}</span>
+      <span style="color:var(--ink3)">${new Date(e.datum).toLocaleString('de-DE')}</span>
+    </div>`).join('');
 }
 
 function addPos(beschr='', menge=1, preis='', keinRabatt=false) {
@@ -2252,8 +2436,27 @@ function buildReObj() {
 
 async function saveRe() {
   const cId = editId;
+  const existing = cId ? DB.rechnungen.find(x=>x.id===cId) : null;
+
+  if(existing && existing.locked) {
+    // Rechnung ist bereits final ausgestellt: nur Status & Notiz dürfen sich ändern
+    const oldStatus = existing.status;
+    const newStatus = v('re-status');
+    const newNotiz = v('re-notiz');
+    if(!existing.log) existing.log = [];
+    if(oldStatus !== newStatus) existing.log.push({ datum: new Date().toISOString(), aktion: `Status geändert: ${oldStatus} → ${newStatus}` });
+    existing.status = newStatus;
+    existing.notiz = newNotiz;
+    closeModal('modal-re');
+    renderRechnungen();
+    await sbSave('rechnungen', existing);
+    return;
+  }
+
   const rec = buildReObj();
   rec.id = cId||rec.id;
+  rec.locked = true;
+  rec.log = existing?.log || [{ datum: new Date().toISOString(), aktion: 'Rechnung erstellt' }];
   if(cId) { const i=DB.rechnungen.findIndex(x=>x.id===cId); if(i>=0) DB.rechnungen[i]=rec; else DB.rechnungen.push(rec); }
   else { DB.rechnungen.push(rec); advanceNextNr(); }
   closeModal('modal-re');
@@ -2291,8 +2494,13 @@ function buildRechnungsnummer() {
 
 async function speichernUndDrucken() {
   const cId = editId;
+  const existing = cId ? DB.rechnungen.find(x=>x.id===cId) : null;
+  if(existing && existing.locked) { druckRe(existing.id); return; }
+
   const rec = buildReObj();
   rec.id = cId||rec.id;
+  rec.locked = true;
+  rec.log = existing?.log || [{ datum: new Date().toISOString(), aktion: 'Rechnung erstellt' }];
   if(cId) { const i=DB.rechnungen.findIndex(x=>x.id===cId); if(i>=0) DB.rechnungen[i]=rec; else DB.rechnungen.push(rec); }
   else { DB.rechnungen.push(rec); advanceNextNr(); }
   closeModal('modal-re');
@@ -2569,6 +2777,84 @@ function renderKalkulator() {
 }
 
 
+
+// ══ EÜR-EXPORT (Einnahmen-Überschuss-Rechnung) ═══════
+function exportEUR() {
+  const jahre = [...new Set(DB.rechnungen.map(r=>r.datum?.slice(0,4)).filter(Boolean))].sort().reverse();
+  const jahr = prompt('Für welches Jahr? (z.B. ' + (jahre[0]||new Date().getFullYear()) + ')', jahre[0]||new Date().getFullYear());
+  if(!jahr) return;
+
+  const re = DB.rechnungen.filter(r=>r.status!=='storniert' && r.datum?.startsWith(jahr));
+  const aus = (DB.ausgaben||[]).filter(a=>a.datum?.startsWith(jahr));
+
+  const gesamtEinnahmen = re.reduce((s,r)=>s+(r.brutto||0),0);
+  const gesamtAusgaben = aus.reduce((s,a)=>s+(parseFloat(a.betrag)||0),0);
+  const gewinn = gesamtEinnahmen - gesamtAusgaben;
+
+  // Ausgaben nach Kategorie gruppiert
+  const ausKat = {};
+  aus.forEach(a => { ausKat[a.kat] = (ausKat[a.kat]||0) + (parseFloat(a.betrag)||0); });
+
+  const cfg = DB.config;
+  let html = `EINNAHMEN-ÜBERSCHUSS-RECHNUNG (EÜR)
+${cfg.name || ''}
+Jahr: ${jahr}
+Erstellt am: ${new Date().toLocaleDateString('de-DE')}
+
+════════════════════════════════════════
+EINNAHMEN
+════════════════════════════════════════
+Anzahl Rechnungen: ${re.length}
+Gesamteinnahmen (brutto): ${fmt(gesamtEinnahmen)} €
+${cfg.steuer==='klein' ? '(Kleinunternehmer gem. § 19 UStG — keine Umsatzsteuer ausgewiesen)' : ''}
+
+════════════════════════════════════════
+AUSGABEN (nach Kategorie)
+════════════════════════════════════════
+`;
+  Object.entries(ausKat).sort((a,b)=>b[1]-a[1]).forEach(([kat,betrag]) => {
+    html += `${kat.padEnd(30)} ${fmt(betrag).padStart(12)} €\n`;
+  });
+  html += `
+Gesamtausgaben: ${fmt(gesamtAusgaben)} €
+
+════════════════════════════════════════
+ERGEBNIS
+════════════════════════════════════════
+Einnahmen:        ${fmt(gesamtEinnahmen)} €
+Ausgaben:       − ${fmt(gesamtAusgaben)} €
+─────────────────────────────────
+Gewinn/Verlust:    ${fmt(gewinn)} €
+
+════════════════════════════════════════
+RECHNUNGSLISTE
+════════════════════════════════════════
+`;
+  re.sort((a,b)=>a.datum>b.datum?1:-1).forEach(r => {
+    html += `${r.datum}  ${r.nr.padEnd(16)} ${(r.kundeName||'').slice(0,25).padEnd(27)} ${fmt(r.brutto||0).padStart(10)} €\n`;
+  });
+
+  html += `
+════════════════════════════════════════
+AUSGABENLISTE
+════════════════════════════════════════
+`;
+  aus.sort((a,b)=>a.datum>b.datum?1:-1).forEach(a => {
+    html += `${a.datum}  ${(a.kat||'').slice(0,20).padEnd(22)} ${(a.beschr||'').slice(0,25).padEnd(27)} ${fmt(parseFloat(a.betrag)||0).padStart(10)} €\n`;
+  });
+
+  html += `
+
+Hinweis: Diese Übersicht dient als Vorbereitung für deine Steuererklärung und ersetzt keine steuerliche Beratung. Bitte von einem Steuerberater prüfen lassen.
+`;
+
+  const blob = new Blob([html], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `EUR_${jahr}_${(cfg.name||'Clarity').replace(/[^a-zA-Z0-9]/g,'_')}.txt`;
+  a.click();
+}
+
 // ══ STATISTIK ════════════════════════════════════════
 function renderStatistik() {
   const re = DB.rechnungen.filter(r=>r.status!=='storniert');
@@ -2721,6 +3007,65 @@ function renderStatistik() {
       <td style="color:var(--ink3)">${fmt(avg)} €</td>
     </tr>`;
   }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Noch keine Daten</td></tr>';
+}
+
+
+
+function stornoMenu() {
+  const choice = confirm('OK = Stornieren & korrigierte Version erstellen\nAbbrechen = Nur stornieren (ohne Korrektur)\n\nWeiter?');
+  if(choice) stornoUndKorrigieren();
+  else {
+    if(confirm('Rechnung nur stornieren, ohne Korrektur zu erstellen?')) stornoOhneKorrektur();
+  }
+}
+
+// ══ STORNIERUNG (§14 UStG-konform) ═══════════════════
+async function stornoUndKorrigieren() {
+  const r = DB.rechnungen.find(x=>x.id===editId);
+  if(!r) return;
+  if(!confirm(`Rechnung ${r.nr} stornieren und korrigierte Version erstellen?\n\nDie Original-Rechnung bleibt für die Buchhaltung erhalten (Status: Storniert). Eine neue Rechnung mit neuer Nummer wird zur Bearbeitung geöffnet.`)) return;
+
+  if(!r.log) r.log = [];
+  r.log.push({ datum: new Date().toISOString(), aktion: 'Storniert (Korrektur erstellt)' });
+  r.status = 'storniert';
+  await sbSave('rechnungen', r);
+
+  closeModal('modal-re');
+  renderRechnungen();
+
+  // Neue korrigierte Rechnung vorbereiten mit gleichen Daten
+  editId = null; posIdx = 0;
+  document.getElementById('re-pos').innerHTML = '';
+  const sel = document.getElementById('re-kunde');
+  sel.innerHTML = '<option value="">— Kunde wählen —</option>' + DB.kunden.map(k=>`<option value="${k.id}">${k.firma||k.name}</option>`).join('');
+  document.getElementById('re-modal-title').textContent = `Korrektur zu ${r.nr}`;
+  sel.value = r.kundeId||'';
+  document.getElementById('re-nr').value = buildRechnungsnummer();
+  document.getElementById('re-datum').valueAsDate = new Date();
+  document.getElementById('re-lieferdatum').value = r.lieferdatum||'';
+  document.getElementById('re-betreff').value = (r.betreff||'') + ` (Korrektur zu ${r.nr})`;
+  document.getElementById('re-rabatt').value = r.rabattPct||'';
+  document.getElementById('re-rabatt-text').value = r.rabattText||'';
+  document.getElementById('re-kanal').value = r.kanal||'';
+  document.getElementById('re-zahlart').value = r.zahlart||'vorkasse';
+  document.getElementById('re-status').value = 'offen';
+  document.getElementById('re-notiz').value = '';
+  (r.positionen||[]).forEach(p => addPos(p.beschr, p.menge, p.preis, p.keinRabatt));
+  calcSums();
+  applyReLockState(false);
+  openModal('modal-re');
+}
+
+async function stornoOhneKorrektur() {
+  const r = DB.rechnungen.find(x=>x.id===editId);
+  if(!r) return;
+  if(!confirm(`Rechnung ${r.nr} stornieren?\n\nDie Rechnung bleibt für die Buchhaltung erhalten, wird aber als storniert markiert. Dies kann nicht rückgängig gemacht werden.`)) return;
+  if(!r.log) r.log = [];
+  r.log.push({ datum: new Date().toISOString(), aktion: 'Storniert' });
+  r.status = 'storniert';
+  await sbSave('rechnungen', r);
+  closeModal('modal-re');
+  renderRechnungen();
 }
 
 // ══ AUSGABEN ═════════════════════════════════════════
@@ -3173,6 +3518,7 @@ function loadCfgForm(){
   document.getElementById('cfg-rabattcode-text').value = c.rabattcodeText||'';
   applyRabattcodeUI();
   updateRabattcodePreview();
+  updateLocalBackupStatus();
 }
 
 function exportData(){
@@ -3194,6 +3540,7 @@ document.getElementById('topbar-date').textContent = new Date().toLocaleDateStri
   await loadDB();
   applyDark();
   renderDash();
+  checkBackupReminder();
 })();
 </script>
 
