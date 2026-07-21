@@ -2371,8 +2371,8 @@ function calcSums() {
     else rabattBasis += pos;
   });
   const rabattPct = parseFloat(document.getElementById('re-rabatt')?.value)||0;
-  const rabattBetrag = rabattBasis * (rabattPct/100);
-  const netto = zwischensumme - rabattBetrag;
+  const rabattBetrag = Math.round(rabattBasis * (rabattPct/100) * 100) / 100;
+  const netto = Math.round((zwischensumme - rabattBetrag) * 100) / 100;
   const cfg = DB.config;
   const klein = cfg.steuer==='klein';
   const mwstSatz = klein ? 0 : (parseInt(cfg.mwst)||19);
@@ -2409,8 +2409,8 @@ function buildReObj() {
   });
   const rabattPct = parseFloat(v('re-rabatt'))||0;
   const rabattText = v('re-rabatt-text');
-  const rabattBetrag = rabattBasis * (rabattPct/100);
-  const nettoNachRabatt = netto - rabattBetrag;
+  const rabattBetrag = Math.round(rabattBasis * (rabattPct/100) * 100) / 100;
+  const nettoNachRabatt = Math.round((netto - rabattBetrag) * 100) / 100;
   const klein = cfg.steuer==='klein';
   const mwstSatz = klein ? 0 : (parseInt(cfg.mwst)||19);
   const mwstBetrag = nettoNachRabatt * mwstSatz / 100;
@@ -2572,7 +2572,7 @@ function vorschau() {
     if(!kr) rabattBasis+=gesamt;
     posRows+=`<tr><td style="padding:8px;border-bottom:1px solid #f0f0f0">${inputs[0]?.value||''}</td><td style="padding:8px;border-bottom:1px solid #f0f0f0;text-align:right">${m}</td><td style="padding:8px;border-bottom:1px solid #f0f0f0;text-align:right">${fmt(p)} €</td><td style="padding:8px;border-bottom:1px solid #f0f0f0;text-align:right;font-weight:600">${fmt(gesamt)} €</td></tr>`;
   });
-  const zwischen=netto; const rabattBetrag=rabattBasis*(rabattPct/100); const nettoNach=netto-rabattBetrag;
+  const zwischen=netto; const rabattBetrag=Math.round(rabattBasis*(rabattPct/100)*100)/100; const nettoNach=Math.round((netto-rabattBetrag)*100)/100;
   const klein=cfg.steuer==='klein'; const mwstSatz=klein?0:(parseInt(cfg.mwst)||19);
   const mwst=nettoNach*mwstSatz/100; const brutto=nettoNach+mwst;
   let sumRows='';
