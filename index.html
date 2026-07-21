@@ -2489,6 +2489,10 @@ function buildRechnungsnummer() {
   if(prefix.includes('{JAHR}')) {
     return prefix.replace('{JAHR}', curYear) + String(nr).padStart(4,'0');
   }
+  // Prüfen ob Präfix bereits eine 4-stellige Jahreszahl enthält (z.B. "RE-2026-") -> Jahr NICHT nochmal anhängen
+  if(/\d{4}/.test(prefix)) {
+    return prefix + String(nr).padStart(4,'0');
+  }
   return prefix + curYear + String(nr).padStart(4,'0');
 }
 
