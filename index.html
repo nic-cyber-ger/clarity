@@ -1036,7 +1036,10 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
     <div class="page" id="page-ausgaben">
       <div class="page-header">
         <div><div class="page-title">Ausgaben</div><div class="page-sub">Kosten & Betriebsausgaben</div></div>
-        <button class="btn btn-primary" onclick="openAusModal()">＋ Neue Ausgabe</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="openEtsyGebuehren()">＋ Etsy-Gebühren</button>
+          <button class="btn btn-primary" onclick="openAusModal()">＋ Neue Ausgabe</button>
+        </div>
       </div>
       <div class="stats-grid" id="aus-stats" style="grid-template-columns:repeat(3,1fr)"></div>
       <div class="search-bar">
@@ -1481,7 +1484,7 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
           <select class="form-select" id="aus-kat">
             <option>Büromaterial</option><option>Software & Lizenzen</option><option>Marketing</option>
             <option>Fahrtkosten</option><option>Telefon & Internet</option><option>Waren & Material</option>
-            <option>Versicherungen</option><option>Weiterbildung</option><option>Steuerberater</option><option>Sonstiges</option>
+            <option>Versicherungen</option><option>Weiterbildung</option><option>Steuerberater</option><option>Etsy-Gebühren</option><option>Sonstiges</option>
           </select>
         </div>
       </div>
@@ -1489,7 +1492,7 @@ body.dark .tab.active .tab-count { background: var(--ink); color: var(--bg); }
       <div class="g2">
         <div class="form-row"><label class="form-label">Betrag (€)</label><input class="form-input" id="aus-betrag" type="number" step="0.01" min="0" placeholder="0,00"></div>
         <div class="form-row"><label class="form-label">Zahlungsart</label>
-          <select class="form-select" id="aus-zahlart"><option>Überweisung</option><option>Kreditkarte</option><option>Bar</option><option>PayPal</option><option>Lastschrift</option></select>
+          <select class="form-select" id="aus-zahlart"><option>Überweisung</option><option>Kreditkarte</option><option>Bar</option><option>PayPal</option><option>Lastschrift</option><option>Etsy (verrechnet)</option></select>
         </div>
       </div>
       <div class="form-row"><label class="form-label">Belegnummer (optional)</label><input class="form-input" id="aus-beleg" placeholder="z.B. INV-2026-001"></div>
@@ -3073,7 +3076,7 @@ async function stornoOhneKorrektur() {
 }
 
 // ══ AUSGABEN ═════════════════════════════════════════
-const AUS_KATS = ['Büromaterial','Software & Lizenzen','Marketing','Fahrtkosten','Telefon & Internet','Waren & Material','Versicherungen','Weiterbildung','Steuerberater','Sonstiges'];
+const AUS_KATS = ['Büromaterial','Software & Lizenzen','Marketing','Fahrtkosten','Telefon & Internet','Waren & Material','Versicherungen','Weiterbildung','Steuerberater','Etsy-Gebühren','Sonstiges'];
 
 function renderAusgaben(q='') {
   const aus = DB.ausgaben||[];
@@ -3117,6 +3120,29 @@ function renderAusgaben(q='') {
       <button class="btn-danger" onclick="delAus('${a.id}')">✕</button>
     </div></td>
   </tr>`).join('');
+}
+
+// ══ ETSY-GEBÜHREN (monatliche Buchung) ══════════════
+function etsyAbrechnungsMonat(now = new Date()) {
+  const last = new Date(now.getFullYear(), now.getMonth(), 0); // letzter Tag des Vormonats
+  const p = n => String(n).padStart(2, '0');
+  return {
+    datum: `${last.getFullYear()}-${p(last.getMonth()+1)}-${p(last.getDate())}`,
+    key: `${last.getFullYear()}-${p(last.getMonth()+1)}`,
+    label: last.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })
+  };
+}
+
+function openEtsyGebuehren() {
+  openAusModal(); // neues, leeres Formular
+  const m = etsyAbrechnungsMonat();
+  document.getElementById('aus-modal-title').textContent = 'Etsy-Gebühren buchen';
+  document.getElementById('aus-datum').value = m.datum;
+  document.getElementById('aus-beschr').value = `Etsy-Gebühren ${m.label}`;
+  document.getElementById('aus-kat').value = 'Etsy-Gebühren';
+  document.getElementById('aus-zahlart').value = 'Etsy (verrechnet)';
+  document.getElementById('aus-beleg').value = `Etsy-Abrechnung ${m.key}`;
+  document.getElementById('aus-betrag').focus();
 }
 
 function openAusModal(id=null) {
